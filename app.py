@@ -308,7 +308,7 @@ HTML_PAGE = """
       <h3>Account</h3>
       <input id="email" type="email" placeholder="Email">
       <input id="phone" type="tel" placeholder="Phone (254...)">
-      <input id="pwd" type="password" placeholder="Password (8+ chars, upper/lower/number)">
+      <label style="display:block;margin:6px 0"><input type="checkbox" onclick="document.getElementById('pwd').type=this.checked?'text':'password'"> Show password</label>
       <button onclick="register()">Create account</button>
       <div style="text-align:center;margin-top:12px">
         <a href="#" onclick="showLogin(); return false;">Already have account? Login</a>
