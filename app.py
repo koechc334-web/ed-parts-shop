@@ -302,21 +302,21 @@ HTML_PAGE = """
       <div id="trackResult" style="margin-top:12px"></div>
     </div>
   </div>
-
-  <div class="panel" id="p7">
-    <div class="card" id="authCard">
-      <h3>Account</h3>
-      <input id="email" type="email" placeholder="Email">
-      <input id="phone" type="tel" placeholder="Phone (254...)">
-      <label style="display:block;margin:6px 0"><input type="checkbox" onclick="document.getElementById('pwd').type=this.checked?'text':'password'"> Show password</label>
-      <button onclick="register()">Create account</button>
-      <div style="text-align:center;margin-top:12px">
-        <a href="#" onclick="showLogin(); return false;">Already have account? Login</a>
-      </div>
+<div class="panel" id="p7">
+  <div class="card" id="authCard">
+    <h3>Account</h3>
+    <input id="email" type="email" placeholder="Email" autocomplete="email" inputmode="email" style="width:100%;margin:6px 0;padding:12px">
+    <input id="phone" type="tel" placeholder="Phone (254...)" autocomplete="tel" inputmode="numeric" style="width:100%;margin:6px 0;padding:12px">
+    <input id="pwd" type="password" placeholder="Password (min 8 chars)" autocomplete="new-password" style="width:100%;margin:6px 0;padding:12px">
+    <label style="display:block;margin:6px 0"><input type="checkbox" onclick="document.getElementById('pwd').type=this.checked?'text':'password'"> Show password</label>
+    <button onclick="register()" style="width:100%;padding:12px;margin-top:8px">Create account</button>
+    <div id="authMsg" style="margin-top:8px;color:#c00"></div>
+    <div style="text-align:center;margin-top:12px">
+      <a href="#" onclick="showLogin(); return false;">Already have account? Login</a>
     </div>
   </div>
+</div>
 
-  <script>
     const state = {
       token: localStorage.getItem('token') || '',
       user: localStorage.getItem('user') || '',
