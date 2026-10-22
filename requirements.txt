@@ -1,5 +1,0 @@
-flask
-flask-jwt-extended
-python-dotenv
-gunicorn
-flask-bcrypt
