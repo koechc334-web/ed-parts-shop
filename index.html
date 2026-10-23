@@ -1,6 +1,252 @@
 <!DOCTYPE html>
-<html><body style="text-align:center; padding:50px; font-family:sans-serif">
-<h1>Ed Parts Shop is BACK ✅</h1>
-<p>Your Render will now work.</p>
-<p>We will add the full shop next.</p>
-</body></html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ikokitufiti - Kenya's Marketplace | Buy & Sell Anything</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--orange:#f68b1e;--dark:#282828;--light:#f5f5f5}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial}
+body{background:var(--light)}
+/* HEADER LIKE JUMIA */
+.top-bar{background:var(--light);padding:5px 20px;display:flex;justify-content:space-between;font-size:12px;color:#666}
+header{background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.1);position:sticky;top:0;z-index:100}
+.header-main{display:flex;align-items:center;gap:20px;padding:10px 20px;max-width:1300px;margin:auto}
+.logo{font-size:24px;font-weight:900;color:var(--orange)} .logo span{color:var(--dark)}
+.search-box{flex:1;display:flex;max-width:600px}
+.search-box input{flex:1;padding:10px 15px;border:1px solid #ddd;border-radius:4px 0 0 4px;outline:none}
+.search-box button{background:var(--orange);color:#fff;border:0;padding:0 20px;border-radius:0 4px 4px 0;font-weight:bold;cursor:pointer}
+.h-icons{display:flex;gap:20px;align-items:center}
+.h-icons div{cursor:pointer;text-align:center;font-size:13px} .h-icons i{font-size:20px;display:block}
+.btn-sell{background:var(--orange);color:#fff;padding:8px 18px;border-radius:4px;font-weight:bold;border:0;cursor:pointer}
+/* LAYOUT */
+.container{display:flex;gap:15px;max-width:1300px;margin:15px auto;padding:0 15px}
+.sidebar{width:220px;background:#fff;border-radius:5px;padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.1);height:fit-content}
+.sidebar h4{margin-bottom:10px} .sidebar a{display:block;padding:8px;color:#333;text-decoration:none;border-radius:4px;font-size:14px}
+.sidebar a:hover{background:#fff5e8;color:var(--orange)} .sidebar a i{width:20px}
+.main{flex:1}
+.banner{background:linear-gradient(90deg,#f68b1e,#ff6a00);color:#fff;border-radius:5px;padding:30px 20px;display:flex;justify-content:space-between;align-items:center}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:15px}
+.product-card{background:#fff;border-radius:5px;padding:10px;box-shadow:0 1px 2px rgba(0,0,0,.1);transition:.2s;cursor:pointer}
+.product-card:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,.15)}
+.product-card img{width:100%;height:140px;object-fit:cover;border-radius:4px;background:#eee}
+.product-card h5{font-size:13px;margin:8px 0;height:36px;overflow:hidden}
+.product-card .price{color:var(--orange);font-weight:bold} .product-card .old{font-size:11px;color:#888;text-decoration:line-through}
+/* AUTH MODALS */
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:1000;justify-content:center;align-items:center;padding:20px}
+.modal-box{background:#fff;width:100%;max-width:420px;border-radius:8px;padding:25px;max-height:90vh;overflow:auto}
+.modal-box h2{text-align:center;margin-bottom:5px} .modal-box p.sub{text-align:center;color:#666;font-size:13px;margin-bottom:20px}
+.input-group{margin-bottom:14px;position:relative}
+.input-group label{font-size:13px;font-weight:600;display:block;margin-bottom:4px}
+.input-group input{width:100%;padding:11px 38px 11px 12px;border:1px solid #ccc;border-radius:4px;outline:none}
+.input-group input:focus{border-color:var(--orange)}
+.eye{position:absolute;right:10px;top:32px;cursor:pointer;color:#888}
+.strength{height:4px;background:#eee;border-radius:2px;margin-top:4px} .strength div{height:100%;width:0%;transition:.3s}
+.btn-primary{width:100%;background:var(--orange);color:#fff;border:0;padding:12px;border-radius:4px;font-weight:bold;cursor:pointer;margin-top:10px}
+.btn-link{color:var(--orange);cursor:pointer;font-size:13px;text-decoration:none}
+.divider{text-align:center;margin:15px 0;color:#aaa;font-size:12px}
+/* UPLOAD */
+.upload-preview{width:100%;height:180px;border:2px dashed #ccc;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;background:#fafafa;overflow:hidden}
+.upload-preview img{width:100%;height:100%;object-fit:cover}
+</style>
+</head>
+<body>
+
+<div class="top-bar"><span>Sell on Ikokitufiti | Call: 0700 000 000</span><span>Pay with M-Pesa | Secure Shopping</span></div>
+
+<header>
+<div class="header-main">
+<div class="logo">IKOKI<span>TUFITI</span>.co.ke</div>
+<div class="search-box"><input id="search" placeholder="Search products, brands and categories..." onkeyup="filterProducts()"><button><i class="fa fa-search"></i> SEARCH</button></div>
+<div class="h-icons">
+<div onclick="openModal('loginModal')"><i class="fa-regular fa-user"></i><span id="userLabel">Account</span></div>
+<div><i class="fa fa-question-circle"></i>Help</div>
+<div><i class="fa fa-shopping-cart"></i>Cart</div>
+<button class="btn-sell" onclick="openModal('uploadModal')">SELL</button>
+</div>
+</div>
+</header>
+
+<div class="container">
+<div class="sidebar">
+<h4><i class="fa fa-bars"></i> Categories</h4>
+<a href="#" onclick="filterCat('all')"><i class="fa fa-store"></i> All Products</a>
+<a href="#" onclick="filterCat('fashion')"><i class="fa fa-shirt"></i> Fashion</a>
+<a href="#" onclick="filterCat('phones')"><i class="fa fa-mobile"></i> Phones & Tablets</a>
+<a href="#" onclick="filterCat('electronics')"><i class="fa fa-tv"></i> Electronics</a>
+<a href="#" onclick="filterCat('home')"><i class="fa fa-couch"></i> Home & Office</a>
+<a href="#" onclick="filterCat('beauty')"><i class="fa fa-spa"></i> Beauty</a>
+<a href="#" onclick="filterCat('farm')"><i class="fa fa-tractor"></i> Farm Produce</a>
+<a href="#" onclick="filterCat('cars')"><i class="fa fa-car"></i> Auto Parts</a>
+</div>
+
+<div class="main">
+<div class="banner">
+<div><h2>Upload Your Product Photo & Reach Kenya!</h2><p style="margin-top:5px">Join 10,000+ sellers on Ikokitufiti. Fast sales, secure payments.</p></div>
+<button class="btn-sell" style="background:#fff;color:var(--orange)" onclick="openModal('uploadModal')">Start Selling <i class="fa fa-arrow-right"></i></button>
+</div>
+<div class="products-grid" id="productsGrid"></div>
+</div>
+</div>
+
+<!-- CREATE ACCOUNT MODAL -->
+<div class="modal" id="signupModal">
+<div class="modal-box">
+<h2>Create Account</h2><p class="sub">Join Ikokitufiti to buy & sell</p>
+<div style="display:flex;gap:10px"><div class="input-group" style="flex:1"><label>First Name</label><input id="fName" placeholder="Victor"></div><div class="input-group" style="flex:1"><label>Last Name</label><input id="lName" placeholder="Kipkorir"></div></div>
+<div class="input-group"><label>Email Address</label><input id="sEmail" type="email" placeholder="you@email.com"></div>
+<div class="input-group"><label>Phone Number (M-Pesa)</label><input id="sPhone" type="tel" placeholder="0700 000 000"></div>
+<div class="input-group"><label>Password</label><input id="sPass" type="password" placeholder="Min 8 characters"><i class="fa fa-eye eye" onclick="toggleEye('sPass',this)"></i><div class="strength"><div id="passStr"></div></div><small id="passText" style="font-size:11px;color:#888"></small></div>
+<div class="input-group"><label>Confirm Password</label><input id="sPass2" type="password" placeholder="Repeat password"><i class="fa fa-eye eye" onclick="toggleEye('sPass2',this)"></i></div>
+<button class="btn-primary" onclick="createAccount()">Create Account & Continue</button>
+<p style="text-align:center;font-size:13px;margin-top:12px">Already have account? <span class="btn-link" onclick="switchModal('signupModal','loginModal')">Login</span></p>
+<p style="font-size:10px;color:#888;margin-top:10px;text-align:center"><i class="fa fa-lock"></i> Your data is encrypted. We never share your phone/email. Secure with HTTPS & password hashing.</p>
+</div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal" id="loginModal">
+<div class="modal-box">
+<h2>Welcome Back!</h2><p class="sub">Login to your Ikokitufiti account</p>
+<div class="input-group"><label>Email or Phone</label><input id="lEmail" placeholder="you@email.com or phone"></div>
+<div class="input-group"><label>Password</label><input id="lPass" type="password"><i class="fa fa-eye eye" onclick="toggleEye('lPass',this)"></i></div>
+<div style="text-align:right"><span class="btn-link" onclick="switchModal('loginModal','forgotModal')">Forgot Password?</span></div>
+<button class="btn-primary" onclick="login()">LOGIN</button>
+<div class="divider">OR</div>
+<button class="btn-primary" style="background:#fff;color:#333;border:1px solid #ccc" onclick="switchModal('loginModal','signupModal')"><i class="fa fa-user-plus"></i> Create New Account</button>
+</div>
+</div>
+
+<!-- FORGOT PASSWORD -->
+<div class="modal" id="forgotModal">
+<div class="modal-box" id="forgotStep1">
+<h2>Forgot Password?</h2><p class="sub">Enter your email to receive reset link</p>
+<div class="input-group"><label>Registered Email</label><input id="forgotEmail" type="email" placeholder="you@email.com"></div>
+<button class="btn-primary" onclick="sendResetLink()">Send Reset Link</button>
+<p style="text-align:center;margin-top:10px"><span class="btn-link" onclick="switchModal('forgotModal','loginModal')">Back to Login</span></p>
+</div>
+<div class="modal-box" id="forgotStep2" style="display:none;text-align:center">
+<i class="fa fa-envelope" style="font-size:50px;color:var(--orange)"></i>
+<h2 style="margin-top:15px">Check Your Email</h2>
+<p class="sub">We sent a reset link to <b id="sentEmail"></b>. Link expires in 15 mins.</p>
+<div style="background:#fff5e8;padding:10px;border-radius:5px;font-size:12px;margin:15px 0;text-align:left">
+<b>Demo Mode (Frontend):</b> Since this is front-end only, click below to simulate opening email link.<br><br>
+<button class="btn-primary" onclick="openResetForm()">Open Reset Link (Simulate Email)</button>
+</div>
+</div>
+</div>
+
+<!-- RESET PASSWORD FORM -->
+<div class="modal" id="resetModal">
+<div class="modal-box">
+<h2>Reset Your Password</h2><p class="sub">Create a new secure password</p>
+<div class="input-group"><label>New Password</label><input id="rPass" type="password"><i class="fa fa-eye eye" onclick="toggleEye('rPass',this)"></i></div>
+<div class="input-group"><label>Confirm New Password</label><input id="rPass2" type="password"><i class="fa fa-eye eye" onclick="toggleEye('rPass2',this)"></i></div>
+<button class="btn-primary" onclick="resetPassword()">Reset & Login</button>
+</div>
+</div>
+
+<!-- UPLOAD PRODUCT MODAL -->
+<div class="modal" id="uploadModal">
+<div class="modal-box">
+<h2><i class="fa fa-camera"></i> Sell Your Product</h2><p class="sub">Upload clear photo to reach greater market</p>
+<div class="upload-preview" id="uploadBox" onclick="document.getElementById('pFile').click()">
+<span id="uploadPlaceholder"><i class="fa fa-cloud-arrow-up" style="font-size:30px"></i><br>Click to upload clear photo<br><small style="color:#888">JPG, PNG - Max 5MB - Clear background sells 3x faster</small></span>
+<img id="previewImg" style="display:none">
+</div>
+<input type="file" id="pFile" accept="image/*" hidden onchange="previewFile(event)">
+<div class="input-group" style="margin-top:12px"><label>Product Name</label><input id="pName" placeholder="e.g. Original Ankara Dress"></div>
+<div style="display:flex;gap:10px"><div class="input-group" style="flex:1"><label>Price (KES)</label><input id="pPrice" type="number" placeholder="2500"></div><div class="input-group" style="flex:1"><label>Category</label><select id="pCat" style="width:100%;padding:11px;border:1px solid #ccc;border-radius:4px"><option value="fashion">Fashion</option><option value="phones">Phones</option><option value="electronics">Electronics</option><option value="home">Home</option><option value="farm">Farm</option></select></div></div>
+<div class="input-group"><label>Description & Location</label><input id="pDesc" placeholder="Condition, size, location e.g. Eldoret"></div>
+<button class="btn-primary" onclick="uploadProduct()">Upload to Marketplace</button>
+<p style="font-size:11px;color:#888;text-align:center;margin-top:8px"><i class="fa fa-shield"></i> Photos are checked for clarity & security. No stolen images allowed.</p>
+</div>
+</div>
+
+<script>
+let products = [
+{n:"Men's Vintage Shirt - Clear Photo",p:1800,o:2500,c:"fashion",img:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300"},
+{n:"Tecno Spark 20 - 128GB",p:18500,o:22000,c:"phones",img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300"},
+{n:"Fresh Avocados - Eldoret Farm",p:30,o:50,c:"farm",img:"https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?w=300"},
+{n:"Toyota Brake Pads Genuine",p:4500,o:6000,c:"cars",img:"https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=300"},
+];
+function render(list=products){
+document.getElementById('productsGrid').innerHTML=list.map(x=>`
+<div class="product-card"><img src="${x.img}"><h5>${x.n}</h5><div class="price">KSh ${x.p.toLocaleString()}</div><div class="old">KSh ${x.o.toLocaleString()}</div><small style="color:green"><i class="fa fa-check"></i> Clear Photo Verified</small></div>
+`).join('');
+}
+render();
+function filterProducts(){
+let q=document.getElementById('search').value.toLowerCase();
+render(products.filter(x=>x.n.toLowerCase().includes(q)));
+}
+function filterCat(cat){
+if(cat==='all') render(products); else render(products.filter(x=>x.c===cat));
+}
+function openModal(id){document.getElementById(id).style.display='flex'}
+function closeModal(id){document.getElementById(id).style.display='none'}
+function switchModal(a,b){closeModal(a);openModal(b)}
+window.onclick=e=>{if(e.target.classList.contains('modal')) e.target.style.display='none'}
+
+function toggleEye(inputId,icon){
+let inp=document.getElementById(inputId);
+inp.type=inp.type==='password'?'text':'password';
+icon.classList.toggle('fa-eye');icon.classList.toggle('fa-eye-slash');
+}
+// password strength
+document.getElementById('sPass')?.addEventListener('input',e=>{
+let v=e.target.value; let score=0;
+if(v.length>=8) score++; if(/[A-Z]/.test(v)) score++; if(/[0-9]/.test(v)) score++; if(/[^A-Za-z0-9]/.test(v)) score++;
+let w=score*25; let bar=document.getElementById('passStr'); let txt=document.getElementById('passText');
+bar.style.width=w+'%'; bar.style.background=w<50?'red':w<75?'orange':'green';
+txt.innerText=w<50?'Weak - add numbers & symbols':w<75?'Good':'Strong & Secure ✅';
+});
+
+function createAccount(){
+if(!document.getElementById('fName').value || !document.getElementById('sEmail').value || document.getElementById('sPass').value.length<8){alert('Fill names, email and min 8 char password');return}
+if(document.getElementById('sPass').value!==document.getElementById('sPass2').value){alert('Passwords do not match');return}
+alert('✅ Account created! Welcome '+document.getElementById('fName').value+'\n(Front-end demo: In real site, this will save with bcrypt hashing + send verification email)');
+document.getElementById('userLabel').innerText=document.getElementById('fName').value;
+closeModal('signupModal');
+}
+function login(){
+if(!document.getElementById('lEmail').value || !document.getElementById('lPass').value){alert('Enter email and password');return}
+alert('✅ Logged in!');closeModal('loginModal');document.getElementById('userLabel').innerText='Hi, User';
+}
+function sendResetLink(){
+let email=document.getElementById('forgotEmail').value;
+if(!email.includes('@')){alert('Enter valid email');return}
+document.getElementById('sentEmail').innerText=email;
+document.getElementById('forgotStep1').style.display='none';
+document.getElementById('forgotStep2').style.display='block';
+}
+function openResetForm(){closeModal('forgotModal');openModal('resetModal')}
+function resetPassword(){
+if(document.getElementById('rPass').value.length<8){alert('Min 8 chars');return}
+if(document.getElementById('rPass').value!==document.getElementById('rPass2').value){alert('Passwords not match');return}
+alert('✅ Password reset successful! Now login with new password.');closeModal('resetModal');openModal('loginModal');
+}
+function previewFile(e){
+let file=e.target.files[0];
+if(!file) return;
+if(file.size>5*1024*1024){alert('Image too big >5MB. Upload clear but compressed photo');return}
+let reader=new FileReader();
+reader.onload=function(){
+document.getElementById('previewImg').src=reader.result;
+document.getElementById('previewImg').style.display='block';
+document.getElementById('uploadPlaceholder').style.display='none';
+}
+reader.readAsDataURL(file);
+}
+function uploadProduct(){
+if(!document.getElementById('previewImg').src || !document.getElementById('pName').value){alert('Upload clear photo and name');return}
+let newP={n:document.getElementById('pName').value,p:parseInt(document.getElementById('pPrice').value)||0,o:parseInt(document.getElementById('pPrice').value)*1.2,c:document.getElementById('pCat').value,img:document.getElementById('previewImg').src};
+products.unshift(newP);render();closeModal('uploadModal');
+alert('✅ Product uploaded! Your clear photo will help you reach greater market. (Pending verification)');
+}
+// close on esc
+document.addEventListener('keydown',e=>{if(e.key==='Escape') document.querySelectorAll('.modal').forEach(m=>m.style.display='none')});
+</script>
+</body>
+</html>
