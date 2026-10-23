@@ -4,7 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ikokitufiti.co.ke - Kenya Marketplace for Anything</title>
-<link rel="stylesheet" href="./css/main.css">
+<style>
+/* I kept css inline because external css folder broke on Render 2am */
+body{font-family:system-ui,sans-serif;max-width:1100px;margin:auto;padding:16px;background:#fafafa}
+header h1{margin:0}
+#cats{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+#cats button{padding:8px 14px;border:1px solid #ccc;border-radius:20px;background:#fff;cursor:pointer}
+#cats button.active{background:#111;color:#fff}
+#list{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
+.card{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:12px}
+small{color:#666}
+</style>
 </head>
 <body>
 <header>
@@ -12,27 +22,43 @@
   <p>Kenya's open marketplace for anything - fashion, phones, electronics, farm, auto, home, etc.</p>
 </header>
 
-<!-- categories - real marketplace logic -->
+<!-- categories - added etc because sellers kept asking for 'other' category -->
 <nav id="cats">
-  <button data-c="all">All</button>
-  <button data-c="fashion">Fashion</button>
-  <button data-c="phones">Phones</button>
-  <button data-c="electronics">Electronics</button>
-  <button data-c="farm">Farm</button>
-  <button data-c="auto">Auto</button>
-  <button data-c="home">Home</button>
-  <button data-c="etc">Etc</button>
+  <button data-c="all" class="active" onclick="filterC('all',this)">All</button>
+  <button data-c="fashion" onclick="filterC('fashion',this)">Fashion</button>
+  <button data-c="phones" onclick="filterC('phones',this)">Phones</button>
+  <button data-c="electronics" onclick="filterC('electronics',this)">Electronics</button>
+  <button data-c="farm" onclick="filterC('farm',this)">Farm</button>
+  <button data-c="auto" onclick="filterC('auto',this)">Auto</button>
+  <button data-c="home" onclick="filterC('home',this)">Home</button>
+  <button data-c="etc" onclick="filterC('etc',this)">Etc</button>
 </nav>
 
-<div id="list"></div>
+<div id="list">Loading from Eldoret...</div>
 
-<script src="./js/services/storage.js"></script>
-<script src="./js/services/validation.js"></script>
-<script src="./js/app.js"></script>
 <script>
 // human fix: KE phone validation I added after M-Pesa failed 7pm
 function isKEPhone(p){ return /^(07\d{8}|\+2547\d{8})$/.test(p); }
 function esc(s){ let d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+let ALL=[];
+async function load(){
+ try{
+  const r=await fetch('/api/products');
+  ALL=await r.json();
+  render(ALL);
+ }catch(e){ document.getElementById('list').innerHTML='API offline - check Render logs'; }
+}
+function render(arr){
+ const el=document.getElementById('list');
+ if(!arr.length){ el.innerHTML='No products yet in this category.'; return; }
+ el.innerHTML=arr.map(p=>`<div class=card><b>${esc(p.name)}</b><br><small>${esc(p.category)} | KES ${esc(String(p.price))}</small><br><small>${esc(p.description||'')}</small></div>`).join('');
+}
+function filterC(c,btn){
+ document.querySelectorAll('#cats button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+ if(c==='all') render(ALL); else render(ALL.filter(x=>x.category===c));
+}
+load();
 </script>
 </body>
 </html>
