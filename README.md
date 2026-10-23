@@ -1,9 +1,9 @@
-# Ikokitufiti.co.ke - Kenya's Open Marketplace
-Kenya's marketplace for anything — fashion, phones, electronics, farm produce, auto parts, home goods, etc. New & secondhand.
+# Ikokitufiti.co.ke — Kenya's Open Marketplace
 
-Live: ed-parts-shop.onrender.com
-Repo name ed-parts-shop is historic — now general marketplace.
+Live: https://ed-parts-shop.onrender.com
+Stack: Flask + SQLite + vanilla JS (no React, keep it light for Safaricom data)
 
-Features: M-Pesa Daraja with retry, Eldoret delivery (CBD 200, etc 350-500), clear photo upload, categories: all, fashion, phones, electronics, farm, cars, home, etc.
+What it sells? Anything — fashion, phones, electronics, farm produce, auto parts, home stuff, etc.
+I added `etc` category because sellers in Eldoret kept asking "where do I list other items?" — not just car parts.
 
-Author: Cornelius K. - Eldoret
+How to run:
