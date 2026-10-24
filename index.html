@@ -37,10 +37,9 @@ small{color:#666}
 <div id="list">Loading from Eldoret...</div>
 
 <script>
-// human fix: KE phone validation I added after M-Pesa failed 7pm
-function isKEPhone(p){ return /^(07\d{8}|\+2547\d{8})$/.test(p); }
-function esc(s){ let d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-
+// Eldoret M-Pesa check - 07... format
+function isKEPhone(p){ return /^(07\d{8}|\+2547\d{8})$/.test(p.replace(/\s/g,'')) }
+function esc(s){ let d=document.createElement('div'); d.textContent=s; return d.innerHTML }
 let ALL=[];
 async function load(){
  try{
