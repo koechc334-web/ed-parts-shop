@@ -1,72 +1,117 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ikokitufitii - Eldoret Open Market</title>
-<style>
-body{font-family:sans-serif;margin:0;background:#f5f5f5}
-header{background:#111;color:#fff;padding:12px 15px;position:sticky;top:0;z-index:10}
-header h1{margin:0;font-size:20px}
-.search{width:100%;padding:12px;margin:10px 0;border-radius:8px;border:0}
-.cats{display:flex;gap:8px;overflow:auto;padding:0 15px}
-.cats button{padding:8px 14px;border:0;border-radius:20px;background:#fff;white-space:nowrap}
-.cats button.active{background:#111;color:#fff}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:15px}
-.card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-.card img{width:100%;height:140px;object-fit:cover}
-.card .p{padding:8px}
-.price{color:green;font-weight:bold}
-.btn{width:100%;background:#25D366;color:#fff;border:0;padding:8px;border-radius:6px;margin-top:5px}
-.boda{background:#fff;margin:15px;padding:10px;border-radius:8px;font-size:13px}
-</style>
-</head>
-<body>
-<header>
-<h1>Ikokitufitii.co.ke — Eldoret</h1>
-<input id="search" class="search" placeholder="Search phones, clothes, farm...">
-</header>
-<div class="cats">
-<button class="active" onclick="filter('all')">All</button>
-<button onclick="filter('phones')">Phones</button>
-<button onclick="filter('fashion')">Fashion</button>
-<button onclick="filter('electronics')">Electronics</button>
-<button onclick="filter('farm')">Farm</button>
-</div>
-<div id="grid" class="grid"></div>
-<div class="boda">
-<b>Boda delivery:</b> CBD 200 | Langas/Nas 350 | Elgon View 400<br>
-<b>M-Pesa STK Push enabled</b> — Admin: <a href="admin.html">Post Product</a>
-</div>
-<script>
-let all=[];
-async function load(){
-let r=await fetch('https://ed-parts-shop.onrender.com/api/products');
-all=await r.json();
-show(all);
-}
-function show(list){
-grid.innerHTML=list.map(p=>`
-<div class="card">
-<img src="${p.image_url || p.image || 'https://via.placeholder.com/200'}">
-<div class="p">
-<div>${p.name}</div>
-<div class="price">KES ${p.price}</div>
-<button class="btn" onclick="buy('${p.name}','${p.price}')">Buy via WhatsApp</button>
-</div>
-</div>`).join('') || '<p style="padding:15px">No products yet. Post from Admin!</p>';
-}
-function filter(cat){
-document.querySelectorAll('.cats button').forEach(b=>b.classList.remove('active'));
-event.target.classList.add('active');
-if(cat=='all') show(all);
-else show(all.filter(x=> (x.category||'').toLowerCase().includes(cat)));
-}
-function buy(n,p){ window.open(`https://wa.me/254700000000?text=Nataka ${n} KES ${p} - Ikokitufitii`); }
-document.getElementById('search').oninput=e=>{
-let q=e.target.value.toLowerCase();
-show(all.filter(x=> x.name.toLowerCase().includes(q)));
-}
-load();
-</script>
-</body>
-</html>
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
+import secrets
+import time
+import datetime
+import os
+
+app = Flask(__name__)
+CORS(app)
+
+# === DATA (MVP in-memory) ===
+products = [
+    {
+        "id": 1,
+        "name": "Loafers",
+        "price": 800,
+        "image": "https://via.placeholder.com/300",
+        "delivery": {"CBD": 200, "Langas": 350, "Elgon View": 400}
+    }
+]
+
+users_db = {}
+reset_tokens = {}
+
+# === SHOP ROUTES ===
+@app.route('/')
+def home():
+    return jsonify({"message": "Ikokitufitii API live", "products": len(products), "users": len(users_db)})
+
+@app.route('/api/products', methods=['GET'])
+def get_products():
+    return jsonify(products)
+
+@app.route('/api/products', methods=['POST'])
+def add_product():
+    data = request.json
+    new_id = max([p['id'] for p in products], default=0) + 1
+    new_product = {
+        "id": new_id,
+        "name": data.get('name'),
+        "price": data.get('price'),
+        "image": data.get('image', 'https://via.placeholder.com/300'),
+        "delivery": data.get('delivery', {"CBD": 200, "Langas": 350, "Elgon View": 400})
+    }
+    products.append(new_product)
+    return jsonify(new_product), 201
+
+@app.route('/api/products/<int:pid>', methods=['DELETE'])
+def delete_product(pid):
+    global products
+    products = [p for p in products if p['id'] != pid]
+    return jsonify({"message": "Deleted"})
+
+# === AUTH ROUTES ===
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.json
+    name = data.get('name', '').strip()
+    email = data.get('email', '').lower().strip()
+    password = data.get('password', '')
+
+    if not name or not email or not password:
+        return jsonify({"error": "Name, email, password required"}), 400
+    if email in users_db:
+        return jsonify({"error": "Email already exists"}), 400
+
+    users_db[email] = {
+        "name": name,
+        "password": generate_password_hash(password),
+        "created": datetime.datetime.now().isoformat()
+    }
+    return jsonify({"message": "Account created", "name": name, "email": email})
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.json
+    email = data.get('email', '').lower().strip()
+    password = data.get('password', '')
+    
+    user = users_db.get(email)
+    if not user or not check_password_hash(user['password'], password):
+        return jsonify({"error": "Wrong email or password"}), 401
+    
+    return jsonify({"message": "Login ok", "name": user['name'], "email": email})
+
+@app.route('/api/forgot-password', methods=['POST'])
+def forgot():
+    email = request.json.get('email', '').lower().strip()
+    if email not in users_db:
+        return jsonify({"message": "If email exists, reset link sent"}), 200
+
+    token = secrets.token_urlsafe(32)
+    reset_tokens[token] = {"email": email, "exp": time.time() + 3600}
+    reset_link = f"https://koechc334-web.github.io/ed-parts-shop/reset.html?token={token}"
+    print(f"RESET LINK for {email}: {reset_link}")
+    # MVP returns link - in production send via email
+    return jsonify({"message": "Reset link sent to email/phone", "reset_link": reset_link})
+
+@app.route('/api/reset-password', methods=['POST'])
+def reset():
+    data = request.json
+    token = data.get('token')
+    new_password = data.get('new_password')
+    
+    info = reset_tokens.get(token)
+    if not info or time.time() > info['exp']:
+        return jsonify({"error": "Link expired or invalid"}), 400
+    
+    email = info['email']
+    users_db[email]['password'] = generate_password_hash(new_password)
+    del reset_tokens[token]
+    return jsonify({"message": "Password reset success"})
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
