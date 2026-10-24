@@ -260,7 +260,9 @@ def delivery_fee():
     zone = request.args.get('zone','cbd').lower()
     fee = DELIVERY_FEES.get(zone, 500)
     return jsonify({"zone": zone, "fee": fee, "currency": "KES"})
-
+@app.route('/')
+def home():
+    return render_template('index.html')
 if __name__ == '__main__':
     # Render needs 0.0.0.0 and PORT env
     port = int(os.environ.get('PORT', 10000))
