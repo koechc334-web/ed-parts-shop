@@ -255,7 +255,7 @@ def upload_image():
 
 @app.route('/api/delivery-fee', methods=['GET'])
 def delivery_fee():
-    """Real business logic - Eldoret zones"""
+       # Real business logic - Eldoret zone
     zone = request.args.get('zone','cbd').lower()
     fee = DELIVERY_FEES.get(zone, 500)
     return jsonify({"zone": zone, "fee": fee, "currency": "KES"})
