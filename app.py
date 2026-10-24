@@ -1,5 +1,9 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
+import secrets
+import time
+import datetime
 import os
 import sqlite3
 from werkzeug.utils import secure_filename
@@ -60,6 +64,46 @@ def add_product():
 @app.route('/')
 def home():
     return "Ed Parts Shop API Running"
+<div id="authModal">
+  <input id="authName" placeholder="Full Name (for signup)">
+  <input id="authEmail" placeholder="Email" type="email">
+  <div style="position:relative">
+    <input id="authPass" placeholder="Password" type="password">
+    <span onclick="togglePass()" style="position:absolute; right:10px; top:8px; cursor:pointer">👁️</span>
+  </div>
+  <button onclick="handleLogin()">Login</button>
+  <button onclick="handleRegister()">Create Account</button>
+  <a onclick="handleForgot()">Forgot password?</a>
+  <p id="authMsg"></p>
+</div>
 
+<script>
+function togglePass(){
+  const p = document.getElementById('authPass');
+  p.type = p.type==='password' ? 'text' : 'password';
+}
+async function handleRegister(){
+  const res = await fetch('https://ed-parts-shop.onrender.com/api/register', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      name: authName.value,
+      email: authEmail.value,
+      password: authPass.value
+    })
+  });
+  const data = await res.json();
+  authMsg.innerText = data.message || data.error;
+}
+async function handleLogin(){ /* same but /api/login */ }
+async function handleForgot(){
+  const res = await fetch('https://ed-parts-shop.onrender.com/api/forgot-password', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email: authEmail.value})
+  });
+  const data = await res.json();
+  authMsg.innerText = data.message + (data.reset_link ? ' Check console' : '');
+  // Later: send via email using EmailJS or SMS via Africa's Talking
+}
+</script>
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
