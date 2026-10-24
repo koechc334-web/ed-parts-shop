@@ -1,16 +1,43 @@
-<!DOCTYPE html><html><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin</title>
+</head>
 <body style="font-family:sans-serif;padding:15px;max-width:400px;margin:auto">
-<h3>Ikokitufiti Admin</h3>
+<h2>Ikokitufiti Admin</h2>
 <form id="f">
-<input id="n" placeholder="Name e.g Tecno Camon 20" required style="width:100%;padding:12px;margin:6px 0"><br>
-<input id="p" type="number" placeholder="Price KES e.g 15000" required style="width:100%;padding:12px;margin:6px 0"><br>
-<select id="c" style="width:100%;padding:12px"><option>phones</option><option>fashion</option><option>electronics</option><option>farm</option></select><br><br>
+<input id="n" placeholder="Product Name" required style="width:100%;padding:12px;margin:5px 0"><br>
+<input id="p" type="number" placeholder="Price KES" required style="width:100%;padding:12px;margin:5px 0"><br>
+<select id="c" style="width:100%;padding:12px">
+<option>phones</option>
+<option>fashion</option>
+<option>electronics</option>
+<option>farm</option>
+</select><br><br>
 <input type="file" id="img" accept="image/*" capture="environment" required><br><br>
-<img id="prev" style="width:100%;display:none"><br>
-<button style="width:100%;padding:14px;background:green;color:white;border:0;border-radius:8px">POST</button>
+<img id="prev" style="width:100%;display:none;border-radius:8px"><br>
+<button style="width:100%;padding:14px;background:green;color:white;border:0;border-radius:8px">POST PRODUCT</button>
 <p id="s"></p>
 </form>
 <script>
-img.onchange=()=>{prev.src=URL.createObjectURL(img.files[0]);prev.style.display='block'}
-f.onsubmit=async(e)=>{e.preventDefault();let fd=new FormData();fd.append('name',n.value);fd.append('price',p.value);fd.append('category',c.value);fd.append('image',img.files[0]);s.textContent='Uploading...';let r=await fetch('https://ed-parts-shop.onrender.com/api/products',{method:'POST',body:fd});s.textContent=r.ok?'✅ Posted!':'❌ Failed '+r.status}
-</script></body></html>
+const i=document.getElementById('img');
+const v=document.getElementById('prev');
+i.onchange=()=>{
+v.src=URL.createObjectURL(i.files[0]);
+v.style.display='block';
+};
+document.getElementById('f').onsubmit=async(e)=>{
+e.preventDefault();
+let fd=new FormData();
+fd.append('name',document.getElementById('n').value);
+fd.append('price',document.getElementById('p').value);
+fd.append('category',document.getElementById('c').value);
+fd.append('image',i.files[0]);
+document.getElementById('s').textContent='Uploading...';
+let r=await fetch('https://ed-parts-shop.onrender.com/api/products',{method:'POST',body:fd});
+document.getElementById('s').textContent=r.ok?'✅ Posted!':'❌ Failed '+r.status;
+};
+</script>
+</body>
+</html>
