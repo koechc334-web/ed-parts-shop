@@ -40,6 +40,13 @@ small{color:#666}
 // Eldoret M-Pesa check - 07... format
 function isKEPhone(p){ return /^(07\d{8}|\+2547\d{8})$/.test(p.replace(/\s/g,'')) }
 function esc(s){ let d=document.createElement('div'); d.textContent=s; return d.innerHTML }
+  // CBD vs outskirts - boda rate 150-300
+function getDeliveryFee(area){
+  area=(area||'').toLowerCase();
+  if(area.includes('cbd')||area.includes('town')) return 150;
+  if(area.includes('chepkoilel')||area.includes('langas')||area.includes('kapsoya')) return 250;
+  return 300;
+
 let ALL=[];
 async function load(){
  try{
