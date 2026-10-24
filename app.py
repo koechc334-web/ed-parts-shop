@@ -4,13 +4,7 @@ Backend: Flask on Render
 Author: Cornelius K. - Eldoret
 Notes: Started as ed-parts-shop, now general market for fashion, phones, electronics, farm, auto, home, etc.
 
-Human fixes after first deploy:
-- Added KE phone regex (Daraja kept failing on 254 vs 07 format)
-- Added etc category because sellers wanted to sell anything
-- 5MB limit for clear photo upload (Tecno phones produce 3-4MB)
-- Added delivery zones: CBD 200, Langas/Kesses 350-500, rural on request
-- Added safe commit rollback after oversell bug 12 Aug
-"""
+# Eldoret boda fees: CBD 200, Langas/Nas 350
 
 import os, secrets, datetime, re
 from flask import Flask, request, jsonify, send_from_directory
