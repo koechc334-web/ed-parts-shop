@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ikokitufitii - Eldoret Open Market</title>
+<style>
+body{font-family:sans-serif;margin:0;background:#f5f5f5}
+header{background:#111;color:#fff;padding:12px 15px;position:sticky;top:0;z-index:10}
+header h1{margin:0;font-size:20px}
+.search{width:100%;padding:12px;margin:10px 0;border-radius:8px;border:0}
+.cats{display:flex;gap:8px;overflow:auto;padding:0 15px}
+.cats button{padding:8px 14px;border:0;border-radius:20px;background:#fff;white-space:nowrap}
+.cats button.active{background:#111;color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:15px}
+.card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.card img{width:100%;height:140px;object-fit:cover}
+.card .p{padding:8px}
+.price{color:green;font-weight:bold}
+.btn{width:100%;background:#25D366;color:#fff;border:0;padding:8px;border-radius:6px;margin-top:5px}
+.boda{background:#fff;margin:15px;padding:10px;border-radius:8px;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>Ikokitufitii.co.ke — Eldoret</h1>
+<input id="search" class="search" placeholder="Search phones, clothes, farm...">
+</header>
+<div class="cats">
+<button class="active" onclick="filter('all')">All</button>
+<button onclick="filter('phones')">Phones</button>
+<button onclick="filter('fashion')">Fashion</button>
+<button onclick="filter('electronics')">Electronics</button>
+<button onclick="filter('farm')">Farm</button>
+</div>
+<div id="grid" class="grid"></div>
+<div class="boda">
+<b>Boda delivery:</b> CBD 200 | Langas/Nas 350 | Elgon View 400<br>
+<b>M-Pesa STK Push enabled</b> — Admin: <a href="admin.html">Post Product</a>
+</div>
+<script>
+let all=[];
+async function load(){
+let r=await fetch('https://ed-parts-shop.onrender.com/api/products');
+all=await r.json();
+show(all);
+}
+function show(list){
+grid.innerHTML=list.map(p=>`
+<div class="card">
+<img src="${p.image_url || p.image || 'https://via.placeholder.com/200'}">
+<div class="p">
+<div>${p.name}</div>
+<div class="price">KES ${p.price}</div>
+<button class="btn" onclick="buy('${p.name}','${p.price}')">Buy via WhatsApp</button>
+</div>
+</div>`).join('') || '<p style="padding:15px">No products yet. Post from Admin!</p>';
+}
+function filter(cat){
+document.querySelectorAll('.cats button').forEach(b=>b.classList.remove('active'));
+event.target.classList.add('active');
+if(cat=='all') show(all);
+else show(all.filter(x=> (x.category||'').toLowerCase().includes(cat)));
+}
+function buy(n,p){ window.open(`https://wa.me/254700000000?text=Nataka ${n} KES ${p} - Ikokitufitii`); }
+document.getElementById('search').oninput=e=>{
+let q=e.target.value.toLowerCase();
+show(all.filter(x=> x.name.toLowerCase().includes(q)));
+}
+load();
+</script>
+</body>
+</html>
