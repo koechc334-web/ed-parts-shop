@@ -48,6 +48,13 @@ function getDeliveryFee(area){
   return 300;
 
 let ALL=[];
+  // low stock alert for shop owner
+function lowStockAlert(qty){
+  qty=parseInt(qty||0);
+  if(qty===0) return 'Out of stock - order tomorrow';
+  if(qty<5) return 'Low: '+qty+' left';
+  return 'In stock';
+}
 async function load(){
  try{
   const r=await fetch('/api/products');
