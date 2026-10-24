@@ -44,8 +44,7 @@ db = SQLAlchemy(app)
 
 # --- Helpers - added after bugs ---
 def is_ke_phone(phone: str) -> bool:
-    """Validate KE: 07xxxxxxxx or +2547xxxxxxxx - M-Pesa needs this"""
-    if not phone:
+        """Validate KE phone for M-Pesa"""
         return False
     return bool(re.match(r'^(07\d{8}|\+2547\d{8}|2547\d{8})$', phone.strip()))
 
