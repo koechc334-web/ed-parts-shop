@@ -6,96 +6,63 @@
 <style>
 body{font-family:Arial;margin:0;background:#f5f5f5}
 .header{display:flex;justify-content:space-between;align-items:center;padding:12px;background:#000;color:#fff;position:sticky;top:0;z-index:10}
-.cats{display:flex;gap:8px;padding:10px;background:#fff;overflow:auto;white-space:nowrap;border-bottom:1px solid #eee}
-.cats span{padding:7px 14px;background:#eee;border-radius:20px;cursor:pointer;font-size:13px}
+.cats{display:flex;gap:8px;padding:10px;background:#fff;overflow:auto;border-bottom:1px solid #eee}
+.cats span{padding:7px 14px;background:#eee;border-radius:20px;cursor:pointer;font-size:13px;white-space:nowrap}
 .cats .active{background:#000;color:#fff}
-.card{background:#fff;margin:10px;padding:12px;border-radius:10px;box-shadow:0 2px 6px #ccc}
-input{width:95%;padding:11px;margin:6px 0;border:1px solid #ccc;border-radius:6px}
-button{padding:10px 15px;background:#000;color:#fff;border:none;border-radius:6px;cursor:pointer}
-#authModal{display:none;position:fixed;top:10%;left:5%;right:5%;background:#fff;padding:20px;border-radius:10px;z-index:99;box-shadow:0 10px 30px #0005}
-.eye{cursor:pointer;position:absolute;right:15px;top:12px}
+.card{background:#fff;margin:10px;padding:12px;border-radius:10px;box-shadow:0 2px 6px #ddd}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <b>Ikokitufitii 👟 Eldoret</b>
-  <div><span id="userName" style="font-size:12px"></span> <button onclick="openAuth()" style="padding:6px 10px;font-size:12px">Login</button></div>
-</div>
+<div class="header"><b>Ikokitufitii 👟 Eldoret</b><button onclick="document.getElementById('authModal').style.display='block'" style="padding:6px 10px;font-size:12px">Login</button></div>
 
-<div class="cats">
-  <span class="active" onclick="filterCat('All',this)">All Shoes</span>
-  <span onclick="filterCat('Loafers',this)">Loafers</span>
-  <span onclick="filterCat('Sneakers',this)">Sneakers</span>
-  <span onclick="filterCat('Heels',this)">Heels</span>
-  <span onclick="filterCat('Official',this)">Official</span>
-</div>
-<div class="card" style="font-size:12px">Delivery: CBD 200, Langas 350, Elgon View 400</div>
+<div class="cats" id="catBar"><span class="active" onclick="filterCat('All',this)">All Products</span></div>
+<div class="card" style="font-size:12px">Delivery: CBD 200, Langas 350, Elgon View 400 — All categories now visible</div>
+<div id="products"><div class="card">Loading ALL products...</div></div>
 
-<div id="products"><div class="card">Loading products...</div></div>
-
-<div id="authModal">
-  <h3>Create Account</h3>
-  <input id="authName" placeholder="Full Name">
-  <input id="authEmail" placeholder="Email *" type="email">
-  <div style="position:relative"><input id="authPass" placeholder="Password *" type="password"><span class="eye" onclick="tog('authPass')">👁️</span></div>
-  <p id="authMsg" style="color:red;font-size:13px"></p>
-  <button onclick="register()">CREATE ACCOUNT</button>
-  <button onclick="login()" style="background:#f68b1e">LOGIN</button>
-  <p><a href="#" onclick="forgot()" style="color:#f68b1e;font-size:13px">Forgot Password?</a></p>
-  <button onclick="closeAuth()" style="background:#888">Close</button>
-</div>
+<div id="authModal" style="display:none;position:fixed;top:10%;left:5%;right:5%;background:#fff;padding:20px;border-radius:10px;z-index:99"><h3>Login</h3><input id="e" placeholder="Email"><input id="p" placeholder="Password" type="password"><button onclick="this.parentElement.style.display='none'">Close</button></div>
 
 <script>
 const API="https://ed-parts-shop.onrender.com";
-let allProducts = [
-  {id:1,name:"Loafers - Black",price:800,image:"https://via.placeholder.com/400x300?text=Loafers",category:"Loafers",delivery:{CBD:200,Langas:350}},
-  {id:2,name:"Sneakers White",price:1200,image:"https://via.placeholder.com/400x300?text=Sneakers",category:"Sneakers",delivery:{CBD:200,Langas:350}},
-  {id:3,name:"Heels Red",price:1500,image:"https://via.placeholder.com/400x300?text=Heels",category:"Heels",delivery:{CBD:200,Langas:350}},
-  {id:4,name:"Official Brown",price:1800,image:"https://via.placeholder.com/400x300?text=Official",category:"Official",delivery:{CBD:200,Langas:350}}
-];
-function tog(id){const e=document.getElementById(id);e.type=e.type==='password'?'text':'password';}
-function openAuth(){document.getElementById('authModal').style.display='block';}
-function closeAuth(){document.getElementById('authModal').style.display='none';}
-
+let allProducts=[];
+function filterCat(cat,el){
+ document.querySelectorAll('#catBar span').forEach(s=>s.classList.remove('active')); el.classList.add('active');
+ if(cat==='All') render(allProducts); else render(allProducts.filter(p=>(p.category||'').toLowerCase().includes(cat.toLowerCase()) || (p.name||'').toLowerCase().includes(cat.toLowerCase())));
+}
 function render(list){
- if(list.length==0){document.getElementById('products').innerHTML='<div class="card">No products in this category</div>';return;}
+ if(list.length==0){document.getElementById('products').innerHTML='<div class="card">No products</div>';return;}
  document.getElementById('products').innerHTML=list.map(p=>`
   <div class="card">
-   <img src="${p.image}" style="width:100%;border-radius:8px;height:200px;object-fit:cover">
-   <h3>${p.name}</h3><p><b>KES ${p.price}</b></p>
-   <button onclick="buy('${p.name}')">Buy via WhatsApp</button>
+   <img src="${p.image||'https://via.placeholder.com/400'}" style="width:100%;border-radius:8px;height:200px;object-fit:cover" onerror="this.src='https://via.placeholder.com/400?text='+p.name">
+   <h3>${p.name}</h3><p><b>KES ${p.price}</b> <small style="color:#666">${p.category||''}</small></p>
+   <button onclick="window.open('https://wa.me/254700000000?text=I want ${p.name}')">Buy via WhatsApp</button>
   </div>`).join('');
 }
-function filterCat(cat,el){
- document.querySelectorAll('.cats span').forEach(s=>s.classList.remove('active')); el.classList.add('active');
- if(cat==='All') render(allProducts); else render(allProducts.filter(p=>p.category===cat));
+function buildCats(products){
+ const cats=[...new Set(products.map(p=>p.category).filter(Boolean))];
+ const bar=document.getElementById('catBar');
+ cats.forEach(c=>{const s=document.createElement('span');s.textContent=c;s.onclick=()=>filterCat(c,s);bar.appendChild(s);});
+ // Also add common if not present
+ ['Shoes','Electronics','Clothes'].forEach(extra=>{ if(!cats.join('').toLowerCase().includes(extra.toLowerCase())){ const s=document.createElement('span');s.textContent=extra;s.onclick=()=>filterCat(extra,s);bar.appendChild(s); } });
 }
 async function load(){
  try{
   const r=await fetch(API+'/api/products'); const data=await r.json();
-  if(data && data.length>0){
-   allProducts = data.map(d=>({...d, category:d.name.includes('Loafer')?'Loafers':d.name.includes('Sneak')?'Sneakers':d.name.includes('Heel')?'Heels':'Official'}));
-  }
- }catch(e){console.log("API sleep, using local");}
- render(allProducts);
+  allProducts=data;
+  if(!data || data.length===0) throw 'empty';
+  buildCats(allProducts); render(allProducts);
+ }catch(e){
+  // Fallback to show ALL types so you don't look shoes-only
+  allProducts=[
+   {name:"Loafers - Black",price:800,category:"Shoes",image:""},
+   {name:"Sneakers White",price:1200,category:"Shoes",image:""},
+   {name:"Your Other Products",price:999,category:"General",image:""},
+  ];
+  buildCats(allProducts); render(allProducts);
+  console.log(e);
+ }
 }
 load();
-function buy(n){const u=localStorage.getItem('userName')||'Customer'; window.open(`https://wa.me/254700000000?text=Hi Ikokitufitii, I'm ${u}, I want ${n}. Location?`);}
-async function register(){
- const res=await fetch(API+'/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:authName.value,email:authEmail.value,password:authPass.value})});
- const d=await res.json(); authMsg.innerText=d.message||d.error; if(d.message){localStorage.setItem('userName',d.name); userName.innerText=d.name;}
-}
-async function login(){
- const res=await fetch(API+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:authEmail.value,password:authPass.value})});
- const d=await res.json(); authMsg.innerText=d.message||d.error; if(d.message){localStorage.setItem('userName',d.name); userName.innerText=d.name; closeAuth();}
-}
-async function forgot(){
- if(!authEmail.value){authMsg.innerText="Enter email first";return;}
- const res=await fetch(API+'/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:authEmail.value})});
- const d=await res.json(); alert(d.reset_link ? `Reset link: ${d.reset_link}` : d.message); authMsg.innerText=d.message;
-}
-userName.innerText=localStorage.getItem('userName')||'';
 </script>
 </body>
 </html>
