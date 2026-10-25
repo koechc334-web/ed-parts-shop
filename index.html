@@ -5,8 +5,11 @@
 <title>Ikokitufitii - Eldoret</title>
 <style>
 body{font-family:Arial;margin:0;background:#f5f5f5}
-.header{display:flex;justify-content:space-between;align-items:center;padding:12px;background:#000;color:#fff}
-.card{background:#fff;margin:12px;padding:15px;border-radius:10px;box-shadow:0 2px 6px #ccc}
+.header{display:flex;justify-content:space-between;align-items:center;padding:12px;background:#000;color:#fff;position:sticky;top:0;z-index:10}
+.cats{display:flex;gap:8px;padding:10px;background:#fff;overflow:auto;white-space:nowrap;border-bottom:1px solid #eee}
+.cats span{padding:7px 14px;background:#eee;border-radius:20px;cursor:pointer;font-size:13px}
+.cats .active{background:#000;color:#fff}
+.card{background:#fff;margin:10px;padding:12px;border-radius:10px;box-shadow:0 2px 6px #ccc}
 input{width:95%;padding:11px;margin:6px 0;border:1px solid #ccc;border-radius:6px}
 button{padding:10px 15px;background:#000;color:#fff;border:none;border-radius:6px;cursor:pointer}
 #authModal{display:none;position:fixed;top:10%;left:5%;right:5%;background:#fff;padding:20px;border-radius:10px;z-index:99;box-shadow:0 10px 30px #0005}
@@ -17,58 +20,80 @@ button{padding:10px 15px;background:#000;color:#fff;border:none;border-radius:6p
 
 <div class="header">
   <b>Ikokitufitii 👟 Eldoret</b>
-  <div><span id="userName"></span> <button onclick="openAuth()">Login / Create Account</button></div>
+  <div><span id="userName" style="font-size:12px"></span> <button onclick="openAuth()" style="padding:6px 10px;font-size:12px">Login</button></div>
 </div>
 
-<div class="card" style="background:#fffbe6">All Shoes | Loafers | Sneakers | Heels - Delivery: CBD 200, Langas 350, Elgon View 400</div>
+<div class="cats">
+  <span class="active" onclick="filterCat('All',this)">All Shoes</span>
+  <span onclick="filterCat('Loafers',this)">Loafers</span>
+  <span onclick="filterCat('Sneakers',this)">Sneakers</span>
+  <span onclick="filterCat('Heels',this)">Heels</span>
+  <span onclick="filterCat('Official',this)">Official</span>
+</div>
+<div class="card" style="font-size:12px">Delivery: CBD 200, Langas 350, Elgon View 400</div>
 
-<div id="products"></div>
+<div id="products"><div class="card">Loading products...</div></div>
 
 <div id="authModal">
-  <h3>Create Account / Login</h3>
-  <input id="authName" placeholder="Full Name (for create account)">
+  <h3>Create Account</h3>
+  <input id="authName" placeholder="Full Name">
   <input id="authEmail" placeholder="Email *" type="email">
   <div style="position:relative"><input id="authPass" placeholder="Password *" type="password"><span class="eye" onclick="tog('authPass')">👁️</span></div>
   <p id="authMsg" style="color:red;font-size:13px"></p>
   <button onclick="register()">CREATE ACCOUNT</button>
   <button onclick="login()" style="background:#f68b1e">LOGIN</button>
-  <p><a href="#" onclick="forgot()" style="color:#f68b1e">Forgot Password?</a></p>
+  <p><a href="#" onclick="forgot()" style="color:#f68b1e;font-size:13px">Forgot Password?</a></p>
   <button onclick="closeAuth()" style="background:#888">Close</button>
 </div>
 
 <script>
 const API="https://ed-parts-shop.onrender.com";
+let allProducts = [
+  {id:1,name:"Loafers - Black",price:800,image:"https://via.placeholder.com/400x300?text=Loafers",category:"Loafers",delivery:{CBD:200,Langas:350}},
+  {id:2,name:"Sneakers White",price:1200,image:"https://via.placeholder.com/400x300?text=Sneakers",category:"Sneakers",delivery:{CBD:200,Langas:350}},
+  {id:3,name:"Heels Red",price:1500,image:"https://via.placeholder.com/400x300?text=Heels",category:"Heels",delivery:{CBD:200,Langas:350}},
+  {id:4,name:"Official Brown",price:1800,image:"https://via.placeholder.com/400x300?text=Official",category:"Official",delivery:{CBD:200,Langas:350}}
+];
 function tog(id){const e=document.getElementById(id);e.type=e.type==='password'?'text':'password';}
 function openAuth(){document.getElementById('authModal').style.display='block';}
 function closeAuth(){document.getElementById('authModal').style.display='none';}
 
-async function load(){
- const r=await fetch(API+'/api/products'); const data=await r.json();
- document.getElementById('products').innerHTML=data.map(p=>`
+function render(list){
+ if(list.length==0){document.getElementById('products').innerHTML='<div class="card">No products in this category</div>';return;}
+ document.getElementById('products').innerHTML=list.map(p=>`
   <div class="card">
-   <img src="${p.image}" style="width:100%;border-radius:8px">
-   <h3>${p.name}</h3><p>KES ${p.price}</p>
-   <p style="font-size:12px;color:#666">Delivery: CBD ${p.delivery.CBD} | Langas ${p.delivery.Langas}</p>
+   <img src="${p.image}" style="width:100%;border-radius:8px;height:200px;object-fit:cover">
+   <h3>${p.name}</h3><p><b>KES ${p.price}</b></p>
    <button onclick="buy('${p.name}')">Buy via WhatsApp</button>
   </div>`).join('');
 }
+function filterCat(cat,el){
+ document.querySelectorAll('.cats span').forEach(s=>s.classList.remove('active')); el.classList.add('active');
+ if(cat==='All') render(allProducts); else render(allProducts.filter(p=>p.category===cat));
+}
+async function load(){
+ try{
+  const r=await fetch(API+'/api/products'); const data=await r.json();
+  if(data && data.length>0){
+   allProducts = data.map(d=>({...d, category:d.name.includes('Loafer')?'Loafers':d.name.includes('Sneak')?'Sneakers':d.name.includes('Heel')?'Heels':'Official'}));
+  }
+ }catch(e){console.log("API sleep, using local");}
+ render(allProducts);
+}
 load();
-function buy(n){const u=localStorage.getItem('userName')||'Customer'; window.open(`https://wa.me/254700000000?text=Hi Ikokitufitii, I'm ${u}, I want ${n}`);}
-
+function buy(n){const u=localStorage.getItem('userName')||'Customer'; window.open(`https://wa.me/254700000000?text=Hi Ikokitufitii, I'm ${u}, I want ${n}. Location?`);}
 async function register(){
  const res=await fetch(API+'/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:authName.value,email:authEmail.value,password:authPass.value})});
- const d=await res.json(); authMsg.innerText=d.message||d.error;
- if(d.message){localStorage.setItem('userName',d.name); userName.innerText=d.name;}
+ const d=await res.json(); authMsg.innerText=d.message||d.error; if(d.message){localStorage.setItem('userName',d.name); userName.innerText=d.name;}
 }
 async function login(){
  const res=await fetch(API+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:authEmail.value,password:authPass.value})});
- const d=await res.json(); authMsg.innerText=d.message||d.error;
- if(d.message){localStorage.setItem('userName',d.name); userName.innerText=d.name; closeAuth();}
+ const d=await res.json(); authMsg.innerText=d.message||d.error; if(d.message){localStorage.setItem('userName',d.name); userName.innerText=d.name; closeAuth();}
 }
 async function forgot(){
  if(!authEmail.value){authMsg.innerText="Enter email first";return;}
  const res=await fetch(API+'/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:authEmail.value})});
- const d=await res.json(); alert(d.reset_link||d.message); authMsg.innerText=d.message;
+ const d=await res.json(); alert(d.reset_link ? `Reset link: ${d.reset_link}` : d.message); authMsg.innerText=d.message;
 }
 userName.innerText=localStorage.getItem('userName')||'';
 </script>
