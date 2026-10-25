@@ -1,117 +1,76 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
-import secrets
-import time
-import datetime
-import os
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ikokitufitii - Eldoret</title>
+<style>
+body{font-family:Arial;margin:0;background:#f5f5f5}
+.header{display:flex;justify-content:space-between;align-items:center;padding:12px;background:#000;color:#fff}
+.card{background:#fff;margin:12px;padding:15px;border-radius:10px;box-shadow:0 2px 6px #ccc}
+input{width:95%;padding:11px;margin:6px 0;border:1px solid #ccc;border-radius:6px}
+button{padding:10px 15px;background:#000;color:#fff;border:none;border-radius:6px;cursor:pointer}
+#authModal{display:none;position:fixed;top:10%;left:5%;right:5%;background:#fff;padding:20px;border-radius:10px;z-index:99;box-shadow:0 10px 30px #0005}
+.eye{cursor:pointer;position:absolute;right:15px;top:12px}
+</style>
+</head>
+<body>
 
-app = Flask(__name__)
-CORS(app)
+<div class="header">
+  <b>Ikokitufitii 👟 Eldoret</b>
+  <div><span id="userName"></span> <button onclick="openAuth()">Login / Create Account</button></div>
+</div>
 
-# === DATA (MVP in-memory) ===
-products = [
-    {
-        "id": 1,
-        "name": "Loafers",
-        "price": 800,
-        "image": "https://via.placeholder.com/300",
-        "delivery": {"CBD": 200, "Langas": 350, "Elgon View": 400}
-    }
-]
+<div class="card" style="background:#fffbe6">All Shoes | Loafers | Sneakers | Heels - Delivery: CBD 200, Langas 350, Elgon View 400</div>
 
-users_db = {}
-reset_tokens = {}
+<div id="products"></div>
 
-# === SHOP ROUTES ===
-@app.route('/')
-def home():
-    return jsonify({"message": "Ikokitufitii API live", "products": len(products), "users": len(users_db)})
+<div id="authModal">
+  <h3>Create Account / Login</h3>
+  <input id="authName" placeholder="Full Name (for create account)">
+  <input id="authEmail" placeholder="Email *" type="email">
+  <div style="position:relative"><input id="authPass" placeholder="Password *" type="password"><span class="eye" onclick="tog('authPass')">👁️</span></div>
+  <p id="authMsg" style="color:red;font-size:13px"></p>
+  <button onclick="register()">CREATE ACCOUNT</button>
+  <button onclick="login()" style="background:#f68b1e">LOGIN</button>
+  <p><a href="#" onclick="forgot()" style="color:#f68b1e">Forgot Password?</a></p>
+  <button onclick="closeAuth()" style="background:#888">Close</button>
+</div>
 
-@app.route('/api/products', methods=['GET'])
-def get_products():
-    return jsonify(products)
+<script>
+const API="https://ed-parts-shop.onrender.com";
+function tog(id){const e=document.getElementById(id);e.type=e.type==='password'?'text':'password';}
+function openAuth(){document.getElementById('authModal').style.display='block';}
+function closeAuth(){document.getElementById('authModal').style.display='none';}
 
-@app.route('/api/products', methods=['POST'])
-def add_product():
-    data = request.json
-    new_id = max([p['id'] for p in products], default=0) + 1
-    new_product = {
-        "id": new_id,
-        "name": data.get('name'),
-        "price": data.get('price'),
-        "image": data.get('image', 'https://via.placeholder.com/300'),
-        "delivery": data.get('delivery', {"CBD": 200, "Langas": 350, "Elgon View": 400})
-    }
-    products.append(new_product)
-    return jsonify(new_product), 201
+async function load(){
+ const r=await fetch(API+'/api/products'); const data=await r.json();
+ document.getElementById('products').innerHTML=data.map(p=>`
+  <div class="card">
+   <img src="${p.image}" style="width:100%;border-radius:8px">
+   <h3>${p.name}</h3><p>KES ${p.price}</p>
+   <p style="font-size:12px;color:#666">Delivery: CBD ${p.delivery.CBD} | Langas ${p.delivery.Langas}</p>
+   <button onclick="buy('${p.name}')">Buy via WhatsApp</button>
+  </div>`).join('');
+}
+load();
+function buy(n){const u=localStorage.getItem('userName')||'Customer'; window.open(`https://wa.me/254700000000?text=Hi Ikokitufitii, I'm ${u}, I want ${n}`);}
 
-@app.route('/api/products/<int:pid>', methods=['DELETE'])
-def delete_product(pid):
-    global products
-    products = [p for p in products if p['id'] != pid]
-    return jsonify({"message": "Deleted"})
-
-# === AUTH ROUTES ===
-@app.route('/api/register', methods=['POST'])
-def register():
-    data = request.json
-    name = data.get('name', '').strip()
-    email = data.get('email', '').lower().strip()
-    password = data.get('password', '')
-
-    if not name or not email or not password:
-        return jsonify({"error": "Name, email, password required"}), 400
-    if email in users_db:
-        return jsonify({"error": "Email already exists"}), 400
-
-    users_db[email] = {
-        "name": name,
-        "password": generate_password_hash(password),
-        "created": datetime.datetime.now().isoformat()
-    }
-    return jsonify({"message": "Account created", "name": name, "email": email})
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    data = request.json
-    email = data.get('email', '').lower().strip()
-    password = data.get('password', '')
-    
-    user = users_db.get(email)
-    if not user or not check_password_hash(user['password'], password):
-        return jsonify({"error": "Wrong email or password"}), 401
-    
-    return jsonify({"message": "Login ok", "name": user['name'], "email": email})
-
-@app.route('/api/forgot-password', methods=['POST'])
-def forgot():
-    email = request.json.get('email', '').lower().strip()
-    if email not in users_db:
-        return jsonify({"message": "If email exists, reset link sent"}), 200
-
-    token = secrets.token_urlsafe(32)
-    reset_tokens[token] = {"email": email, "exp": time.time() + 3600}
-    reset_link = f"https://koechc334-web.github.io/ed-parts-shop/reset.html?token={token}"
-    print(f"RESET LINK for {email}: {reset_link}")
-    # MVP returns link - in production send via email
-    return jsonify({"message": "Reset link sent to email/phone", "reset_link": reset_link})
-
-@app.route('/api/reset-password', methods=['POST'])
-def reset():
-    data = request.json
-    token = data.get('token')
-    new_password = data.get('new_password')
-    
-    info = reset_tokens.get(token)
-    if not info or time.time() > info['exp']:
-        return jsonify({"error": "Link expired or invalid"}), 400
-    
-    email = info['email']
-    users_db[email]['password'] = generate_password_hash(new_password)
-    del reset_tokens[token]
-    return jsonify({"message": "Password reset success"})
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+async function register(){
+ const res=await fetch(API+'/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:authName.value,email:authEmail.value,password:authPass.value})});
+ const d=await res.json(); authMsg.innerText=d.message||d.error;
+ if(d.message){localStorage.setItem('userName',d.name); userName.innerText=d.name;}
+}
+async function login(){
+ const res=await fetch(API+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:authEmail.value,password:authPass.value})});
+ const d=await res.json(); authMsg.innerText=d.message||d.error;
+ if(d.message){localStorage.setItem('userName',d.name); userName.innerText=d.name; closeAuth();}
+}
+async function forgot(){
+ if(!authEmail.value){authMsg.innerText="Enter email first";return;}
+ const res=await fetch(API+'/api/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:authEmail.value})});
+ const d=await res.json(); alert(d.reset_link||d.message); authMsg.innerText=d.message;
+}
+userName.innerText=localStorage.getItem('userName')||'';
+</script>
+</body>
+</html>
