@@ -1,109 +1,116 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
-import secrets
-import time
-import datetime
-import os
-import sqlite3
-from werkzeug.utils import secure_filename
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create Account - Ikokitufitii</title>
+<style>
+body{font-family:Roboto,Arial; background:#f5f5f5; margin:0}
+.top{background:#000; color:#fff; padding:12px; text-align:center; font-weight:bold}
+.container{max-width:400px; margin:20px auto; background:#fff; padding:25px; border-radius:8px; box-shadow:0 2px 10px #ddd}
+input{width:100%; padding:12px; margin:8px 0; border:1px solid #ccc; border-radius:5px; box-sizing:border-box}
+.pass-wrap{position:relative}
+.eye{position:absolute; right:12px; top:14px; cursor:pointer}
+button{width:100%; padding:13px; background:#f68b1e; color:#fff; border:none; border-radius:5px; font-weight:bold; margin-top:10px; cursor:pointer}
+a{color:#f68b1e; text-decoration:none; font-size:14px}
+.cat-bar{display:flex; gap:10px; overflow:auto; padding:10px; background:#fff}
+.cat-bar span{padding:6px 12px; background:#eee; border-radius:20px; white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="top">Ikokitufitii 👟 Eldoret - Jumia Style</div>
 
-app = Flask(__name__)
-CORS(app)
-
-UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-DATABASE = 'edparts.db'
-
-def get_db():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-def init_db():
-    conn = get_db()
-    conn.execute('''CREATE TABLE IF NOT EXISTS products 
-                 (id INTEGER PRIMARY KEY, name TEXT, price REAL, 
-                  category TEXT, image_url TEXT, image TEXT)''')
-    conn.commit()
-    conn.close()
-
-init_db()
-
-@app.route('/uploads/<path:filename>')
-def uploaded_files(filename):
-    return send_from_directory(UPLOAD_FOLDER, filename)
-
-@app.route('/api/products', methods=['GET'])
-def get_products():
-    conn = get_db()
-    products = conn.execute('SELECT * FROM products').fetchall()
-    conn.close()
-    return jsonify([dict(p) for p in products])
-
-@app.route('/api/products', methods=['POST'])
-def add_product():
-    name = request.form.get('name')
-    price = request.form.get('price')
-    category = request.form.get('category','general')
-    file = request.files.get('image')
-    image_url = ''
-    if file:
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(filepath)
-        image_url = f"https://ed-parts-shop.onrender.com/uploads/{filename}"
-    conn = get_db()
-    conn.execute('INSERT INTO products (name,price,category,image_url,image) VALUES (?,?,?,?,?)',
-                 (name,price,category,image_url,image_url))
-    conn.commit()
-    conn.close()
-    return jsonify({"success": True, "image_url": image_url})
-
-@app.route('/')
-def home():
-    return "Ed Parts Shop API Running"
-<div id="authModal">
-  <input id="authName" placeholder="Full Name (for signup)">
-  <input id="authEmail" placeholder="Email" type="email">
-  <div style="position:relative">
-    <input id="authPass" placeholder="Password" type="password">
-    <span onclick="togglePass()" style="position:absolute; right:10px; top:8px; cursor:pointer">👁️</span>
-  </div>
-  <button onclick="handleLogin()">Login</button>
-  <button onclick="handleRegister()">Create Account</button>
-  <a onclick="handleForgot()">Forgot password?</a>
-  <p id="authMsg"></p>
+<div class="cat-bar">
+  <span>All Shoes</span><span>Loafers</span><span>Sneakers</span><span>Heels</span><span>Official</span><span>Kids</span>
 </div>
 
+<div class="container">
+  <h2>Create Account</h2>
+  <p style="font-size:14px">Already have account? <a href="login.html">Login</a></p>
+  
+  <input id="name" placeholder="Full Name *">
+  <input id="email" placeholder="Email Address *" type="email">
+  
+  <div class="pass-wrap">
+    <input id="password" placeholder="Password *" type="password">
+    <span class="eye" onclick="toggle('password')">👁️</span>
+  </div>
+  
+  <div class="pass-wrap">
+    <input id="confirm" placeholder="Confirm Password *" type="password">
+    <span class="eye" onclick="toggle('confirm')">👁️</span>
+  </div>
+
+  <p><a href="#" onclick="forgot()">Forgot Password?</a></p>
+  
+  <button onclick="createAccount()">CREATE ACCOUNT</button>
+  <p id="msg" style="font-size:13px"></p>
+  
+  <p style="font-size:12px; color:#666; margin-top:15px">By creating account you agree to our Terms. Delivery: CBD 200, Langas 350, Elgon View 400</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
-function togglePass(){
-  const p = document.getElementById('authPass');
-  p.type = p.type==='password' ? 'text' : 'password';
+emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // I'll give you key next
+
+const API = "https://ed-parts-shop.onrender.com";
+function toggle(id){
+  const el=document.getElementById(id);
+  el.type = el.type==='password' ? 'text' : 'password';
 }
-async function handleRegister(){
-  const res = await fetch('https://ed-parts-shop.onrender.com/api/register', {
+
+async function createAccount(){
+  const name=document.getElementById('name').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const pass=document.getElementById('password').value;
+  const confirm=document.getElementById('confirm').value;
+  
+  if(!name || !email || !pass){ msg.innerText="Fill all *"; return; }
+  if(pass!==confirm){ msg.innerText="Passwords don't match"; return; }
+
+  msg.innerText="Creating...";
+  const res = await fetch(API+'/api/register',{
     method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      name: authName.value,
-      email: authEmail.value,
-      password: authPass.value
-    })
+    body:JSON.stringify({name,email,password:pass})
   });
-  const data = await res.json();
-  authMsg.innerText = data.message || data.error;
+  const data=await res.json();
+  if(data.error){ msg.innerText=data.error; }
+  else { 
+    msg.innerText="Success! Redirecting to login...";
+    localStorage.setItem('userName', data.name);
+    setTimeout(()=> location.href='login.html', 1000);
+  }
 }
-async function handleLogin(){ /* same but /api/login */ }
-async function handleForgot(){
-  const res = await fetch('https://ed-parts-shop.onrender.com/api/forgot-password', {
+
+async function forgot(){
+  const email=document.getElementById('email').value.trim();
+  if(!email){ msg.innerText="Enter email first to reset"; return; }
+  msg.innerText="Sending reset code to email...";
+  
+  const res = await fetch(API+'/api/forgot-password',{
     method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({email: authEmail.value})
+    body:JSON.stringify({email})
   });
-  const data = await res.json();
-  authMsg.innerText = data.message + (data.reset_link ? ' Check console' : '');
-  // Later: send via email using EmailJS or SMS via Africa's Talking
+  const data=await res.json();
+  
+  // SEND REAL EMAIL with code
+  const code = data.reset_link ? data.reset_link.split('token=')[1].slice(0,6).toUpperCase() : Math.floor(100000+Math.random()*900000);
+  
+  try{
+    await emailjs.send("service_id","template_id",{
+      to_email: email,
+      reset_code: code,
+      reset_link: data.reset_link
+    });
+    msg.innerText=`Code sent to ${email}. Code: ${code}`;
+    localStorage.setItem('reset_code', code);
+    localStorage.setItem('reset_email', email);
+    setTimeout(()=> location.href=`reset.html?token=${data.reset_link?.split('token=')[1] || ''}`, 1500);
+  }catch(e){
+    // MVP fallback: show link
+    msg.innerText = data.message + " Link: " + data.reset_link;
+    alert("Reset link (MVP): " + data.reset_link);
+  }
 }
 </script>
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+</body>
+</html>
