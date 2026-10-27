@@ -1,68 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ikokitufitii - Eldoret</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ikokitufitii Eldoret</title>
 <style>
-body{font-family:Arial;margin:0;background:#f5f5f5}
-.header{display:flex;justify-content:space-between;align-items:center;padding:12px;background:#000;color:#fff;position:sticky;top:0;z-index:10}
-.cats{display:flex;gap:8px;padding:10px;background:#fff;overflow:auto;border-bottom:1px solid #eee}
-.cats span{padding:7px 14px;background:#eee;border-radius:20px;cursor:pointer;font-size:13px;white-space:nowrap}
-.cats .active{background:#000;color:#fff}
-.card{background:#fff;margin:10px;padding:12px;border-radius:10px;box-shadow:0 2px 6px #ddd}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial}
+body{background:#f2f2f2}
+.top{background:#000;color:#fff;padding:15px;display:flex;justify-content:space-between}
+.top h1{font-size:24px;letter-spacing:1px}
+.green{background:#16a34a;color:#fff;margin:12px;border-radius:16px;padding:14px}
+.green input{width:100%;margin-top:10px;padding:12px;border-radius:10px;border:none}
+.cat{display:flex;gap:8px;padding:0 12px 12px;overflow-x:auto}
+.cat button{padding:8px 14px;border-radius:20px;border:1px solid #ccc;background:#fff;white-space:nowrap}
+.cat button.active{background:#000;color:#fff}
+#products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.item{background:#fff;border-radius:12px;overflow:hidden}
+.item img{width:100%;height:190px;object-fit:cover;display:block;background:#ddd}
+.item .d{padding:8px}
+.item h4{font-size:14px}
+.item small{color:#666;font-size:11px}
+.price{font-weight:bold;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
+.price a{background:#22c55e;color:#fff;padding:5px 12px;border-radius:15px;text-decoration:none;font-size:12px}
+.hide{display:none}
 </style>
 </head>
 <body>
 
-<div class="header"><b>Ikokitufitii 👟 Eldoret</b><button onclick="document.getElementById('authModal').style.display='block'" style="padding:6px 10px;font-size:12px">Login</button></div>
+<div class="top"><h1>ikokitufitii</h1><div>🛒</div></div>
 
-<div class="cats" id="catBar"><span class="active" onclick="filterCat('All',this)">All Products</span></div>
-<div class="card" style="font-size:12px">Delivery: CBD 200, Langas 350, Elgon View 400 — All categories now visible</div>
-<div id="products"><div class="card">Loading ALL products...</div></div>
+<div class="green">
+<b>🚚 FREE DELIVERY IN ELDORET - CBD 200, Langas 350</b><br>
+<small>Pay on Delivery • M-Pesa Till 123456</small>
+<input id="search" placeholder="Search shoes..." onkeyup="filterAll()">
+</div>
 
-<div id="authModal" style="display:none;position:fixed;top:10%;left:5%;right:5%;background:#fff;padding:20px;border-radius:10px;z-index:99"><h3>Login</h3><input id="e" placeholder="Email"><input id="p" placeholder="Password" type="password"><button onclick="this.parentElement.style.display='none'">Close</button></div>
+<div class="cat">
+<button class="active" onclick="showCat('all',this)">All ✓</button>
+<button onclick="showCat('sneakers',this)">Sneakers</button>
+<button onclick="showCat('boots',this)">Boots</button>
+<button onclick="showCat('formal',this)">Formal</button>
+<button onclick="showCat('running',this)">Running</button>
+</div>
 
-<script>
-const API="https://ed-parts-shop.onrender.com";
-let allProducts=[];
-function filterCat(cat,el){
- document.querySelectorAll('#catBar span').forEach(s=>s.classList.remove('active')); el.classList.add('active');
- if(cat==='All') render(allProducts); else render(allProducts.filter(p=>(p.category||'').toLowerCase().includes(cat.toLowerCase()) || (p.name||'').toLowerCase().includes(cat.toLowerCase())));
-}
-function render(list){
- if(list.length==0){document.getElementById('products').innerHTML='<div class="card">No products</div>';return;}
- document.getElementById('products').innerHTML=list.map(p=>`
-  <div class="card">
-   <img src="${p.image||'https://via.placeholder.com/400'}" style="width:100%;border-radius:8px;height:200px;object-fit:cover" onerror="this.src='https://via.placeholder.com/400?text='+p.name">
-   <h3>${p.name}</h3><p><b>KES ${p.price}</b> <small style="color:#666">${p.category||''}</small></p>
-   <button onclick="window.open('https://wa.me/254700000000?text=I want ${p.name}')">Buy via WhatsApp</button>
-  </div>`).join('');
-}
-function buildCats(products){
- const cats=[...new Set(products.map(p=>p.category).filter(Boolean))];
- const bar=document.getElementById('catBar');
- cats.forEach(c=>{const s=document.createElement('span');s.textContent=c;s.onclick=()=>filterCat(c,s);bar.appendChild(s);});
- // Also add common if not present
- ['Shoes','Electronics','Clothes'].forEach(extra=>{ if(!cats.join('').toLowerCase().includes(extra.toLowerCase())){ const s=document.createElement('span');s.textContent=extra;s.onclick=()=>filterCat(extra,s);bar.appendChild(s); } });
-}
-async function load(){
- try{
-  const r=await fetch(API+'/api/products'); const data=await r.json();
-  allProducts=data;
-  if(!data || data.length===0) throw 'empty';
-  buildCats(allProducts); render(allProducts);
- }catch(e){
-  // Fallback to show ALL types so you don't look shoes-only
-  allProducts=[
-   {name:"Loafers - Black",price:800,category:"Shoes",image:""},
-   {name:"Sneakers White",price:1200,category:"Shoes",image:""},
-   {name:"Your Other Products",price:999,category:"General",image:""},
-  ];
-  buildCats(allProducts); render(allProducts);
-  console.log(e);
- }
-}
-load();
-</script>
-</body>
-</html>
+<div id="products">
+
+<!-- PRODUCT 1 -->
+<div class="item" data-cat="running sneakers">
+<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80" onerror="this.src='https://via.placeholder.com/400?text=SHOE'">
+<div class="d">
+<h4>Loafers - Black</h4>
+<small>Men • Sneakers</small>
+<div class="price"><span>KES 800</span><a href="https://wa.me/254700000000?text=Loafers+Black+KES800">Buy</a></div>
+</div>
+</div>
+
+<!-- PRODUCT 2 -->
+<div class="item" data
