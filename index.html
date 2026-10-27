@@ -1,108 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ikokitufitii Eldoret - All Shoes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KenyaMart - Everything for Kenya</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,Arial}
-body{background:#f5f5f5;padding-bottom:80px}
-.top{background:#000;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:9}
-.top h1{font-size:22px;font-weight:900;letter-spacing:1px}
-.banner{background:#16a34a;color:#fff;margin:12px;border-radius:16px;padding:14px}
-.banner b{font-size:15px}
-.banner input{width:100%;margin-top:10px;padding:12px;border-radius:10px;border:0;font-size:15px}
-.cats{display:flex;gap:8px;padding:0 12px 10px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
-.cats button{padding:8px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:13px}
-.cats button.active{background:#000;color:#fff;border-color:#000}
-#products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 12px}
-.item{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.item img{width:100%;height:185px;object-fit:cover;background:#eee;display:block}
-.d{padding:9px}
-.d h4{font-size:13.5px;line-height:1.2}
-.d small{color:#666;font-size:11px}
-.price{margin-top:6px;display:flex;justify-content:space-between;align-items:center}
-.price span{font-weight:800;font-size:13px}
-.price a{background:#22c55e;color:#fff;padding:6px 12px;border-radius:20px;text-decoration:none;font-size:12px;font-weight:700}
-.hide{display:none!important}
+body{font-family:Arial;margin:0;background:#f5f5f5}
+.header{background:black;color:white;padding:15px;display:flex;justify-content:space-between}
+.banner{background:#00a651;color:white;padding:15px;margin:10px;border-radius:15px}
+.banner input{width:95%;padding:12px;border-radius:10px;border:none;margin-top:10px}
+.cats{display:flex;gap:8px;overflow-x:auto;padding:10px;white-space:nowrap}
+.cats button{padding:8px 18px;border-radius:20px;border:1px solid #ccc;background:white}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
+.card{background:white;padding:10px;border-radius:12px;text-align:center}
+.card img{width:100%;height:140px;object-fit:cover;border-radius:8px}
+.btn{background:#00a651;color:white;padding:8px 12px;border:none;border-radius:8px;width:100%;margin-top:5px}
 </style>
 </head>
 <body>
-
-<div class="top"><h1>ikokitufitii</h1><span>🛒 Eldoret</span></div>
+<div class="header">
+<b>KenyaMart.co.ke</b>
+<span>🇰🇪 All Kenya</span>
+</div>
 
 <div class="banner">
-<b>🚚 FREE DELIVERY IN ELDORET - CBD 200, Langas 350</b><br>
-<small>Pay on Delivery • M-Pesa Till: 123456 - REPLACE WITH YOURS</small>
-<input id="searchBox" onkeyup="doSearch()" placeholder="Search shoes, e.g. loafers, boots...">
+🚚 <b>DELIVERY COUNTRYWIDE - Nairobi 200, Mombasa Kisumu Eldoret 300, Other Towns 350</b><br>
+Pay on Delivery • M-Pesa Till: 123456 - REPLACE WITH YOURS<br>
+<input type="text" id="search" placeholder="Search for TV, Dress, Sofa, Makeup..." onkeyup="searchProducts()">
 </div>
 
 <div class="cats">
-<button class="active" onclick="filterCat('all',this)">All ✓</button>
-<button onclick="filterCat('sneakers',this)">Sneakers</button>
-<button onclick="filterCat('loafers',this)">Loafers</button>
-<button onclick="filterCat('boots',this)">Boots</button>
-<button onclick="filterCat('formal',this)">Formal</button>
-<button onclick="filterCat('sandals',this)">Sandals</button>
-<button onclick="filterCat('heels',this)">Heels</button>
+<button onclick="filterCat('All')">All</button>
+<button onclick="filterCat('Electronics')">Electronics</button>
+<button onclick="filterCat('Fashion')">Fashion</button>
+<button onclick="filterCat('Home')">Home</button>
+<button onclick="filterCat('Beauty')">Beauty</button>
+<button onclick="filterCat('Kids')">Kids</button>
 </div>
 
-<div id="products">
-<!-- 1 LOAFERS BLACK - YOUR CURRENT -->
-<div class="item" data-cat="loafers sneakers">
-<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80" loading="lazy">
-<div class="d"><h4>Loafers - Black</h4><small>Men • Loafers</small><div class="price"><span>KES 800</span><a href="https://wa.me/254700000000?text=Hi%20I%20want%20Loafers%20Black%20KES%20800">Buy</a></div></div>
-</div>
-<!-- 2 -->
-<div class="item" data-cat="sneakers">
-<img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&q=80" loading="lazy">
-<div class="d"><h4>AirForce White</h4><small>Men • Sneakers</small><div class="price"><span>KES 2,500</span><a href="https://wa.me/254700000000?text=AirForce%20White">Buy</a></div></div>
-</div>
-<!-- 3 -->
-<div class="item" data-cat="boots">
-<img src="https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=600&q=80" loading="lazy">
-<div class="d"><h4>Timberland Brown</h4><small>Men • Boots</small><div class="price"><span>KES 4,500</span><a href="https://wa.me/254700000000?text=Timberland">Buy</a></div></div>
-</div>
-<!-- 4 -->
-<div class="item" data-cat="formal loafers">
-<img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&q=80" loading="lazy">
-<div class="d"><h4>Formal Brown</h4><small>Men • Formal</small><div class="price"><span>KES 1,800</span><a href="https://wa.me/254700000000?text=Formal%20Brown">Buy</a></div></div>
-</div>
-<!-- 5 -->
-<div class="item" data-cat="sandals">
-<img src="https://images.unsplash.com/photo-1603808033176-ff1a1d3b3cc6?w=600&q=80" loading="lazy">
-<div class="d"><h4>Leather Sandals</h4><small>Unisex • Sandals</small><div class="price"><span>KES 1,200</span><a href="https://wa.me/254700000000?text=Sandals">Buy</a></div></div>
-</div>
-<!-- 6 -->
-<div class="item" data-cat="heels">
-<img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80" loading="lazy">
-<div class="d"><h4>Ladies Heels</h4><small>Women • Heels</small><div class="price"><span>KES 2,200</span><a href="https://wa.me/254700000000?text=Heels">Buy</a></div></div>
-</div>
-<!-- 7 -->
-<div class="item" data-cat="sneakers running">
-<img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80" loading="lazy">
-<div class="d"><h4>Running Black</h4><small>Men • Running</small><div class="price"><span>KES 3,000</span><a href="https://wa.me/254700000000?text=Running%20Black">Buy</a></div></div>
-</div>
-<!-- 8 -->
-<div class="item" data-cat="formal">
-<img src="https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80" loading="lazy">
-<div class="d"><h4>Official Black</h4><small>Men • Formal</small><div class="price"><span>KES 3,500</span><a href="https://wa.me/254700000000?text=Official%20Black">Buy</a></div></div>
-</div>
-</div>
+<div class="products" id="productList"></div>
 
 <script>
-function filterCat(cat,btn){
-document.querySelectorAll('.cats button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
-document.querySelectorAll('.item').forEach(el=>{
-if(cat==='all' || el.dataset.cat.includes(cat)) el.classList.remove('hide'); else el.classList.add('hide');
+let products = [
+{name:"Samsung 32 TV", category:"Electronics", price:18500, img:"https://images.unsplash.com/photo-1593359677879-a4bb92f367d8"},
+{name:"Bluetooth Speaker", category:"Electronics", price:2500, img:"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1"},
+{name:"Fashion Dress", category:"Fashion", price:1800, img:"https://images.unsplash.com/photo-1515378791036-0648a3ef77b2"},
+{name:"Men Sneakers", category:"Fashion", price:2800, img:"https://images.unsplash.com/photo-1542291026-7eec264c27ff"},
+{name:"Sofa Cover Set", category:"Home", price:3500, img:"https://images.unsplash.com/photo-1586023492125-27b2c045efd7"},
+{name:"Non-stick Sufuria", category:"Home", price:2200, img:"https://images.unsplash.com/photo-1585515656383-45a8c1dc9a2d"},
+{name:"Makeup Kit", category:"Beauty", price:1500, img:"https://images.unsplash.com/photo-1596462502278-27bfdc403348"},
+{name:"Kids Shoes", category:"Kids", price:1200, img:"https://images.unsplash.com/photo-1514989940723-e8e51635b782"},
+];
+
+let list = document.getElementById('productList');
+function show(list2){
+list.innerHTML="";
+list2.forEach(p=>{
+list.innerHTML+=`<div class="card"><img src="${p.img}"><h4>${p.name}</h4><p>KES ${p.price}</p><button class="btn" onclick="buy('${p.name}')">Buy via WhatsApp</button></div>`;
 });
 }
-function doSearch(){
-let q=document.getElementById('searchBox').value.toLowerCase();
-document.querySelectorAll('.item').forEach(el=>{
-el.classList.toggle('hide', !el.innerText.toLowerCase().includes(q));
-});
+function filterCat(c){
+if(c=='All') show(products);
+else show(products.filter(p=>p.category==c));
 }
+function searchProducts(){
+let s=document.getElementById('search').value.toLowerCase();
+show(products.filter(p=>p.name.toLowerCase().includes(s) || p.category.toLowerCase().includes(s)));
+}
+function buy(name){
+window.open("https://wa.me/254700000000?text=Hi, I want to buy "+name, "_blank");
+}
+show(products);
 </script>
 </body>
 </html>
