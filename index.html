@@ -1,59 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ikokitufitii Eldoret</title>
+<title>Ikokitufitii Eldoret - All Shoes</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial}
-body{background:#f2f2f2}
-.top{background:#000;color:#fff;padding:15px;display:flex;justify-content:space-between}
-.top h1{font-size:24px;letter-spacing:1px}
-.green{background:#16a34a;color:#fff;margin:12px;border-radius:16px;padding:14px}
-.green input{width:100%;margin-top:10px;padding:12px;border-radius:10px;border:none}
-.cat{display:flex;gap:8px;padding:0 12px 12px;overflow-x:auto}
-.cat button{padding:8px 14px;border-radius:20px;border:1px solid #ccc;background:#fff;white-space:nowrap}
-.cat button.active{background:#000;color:#fff}
-#products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
-.item{background:#fff;border-radius:12px;overflow:hidden}
-.item img{width:100%;height:190px;object-fit:cover;display:block;background:#ddd}
-.item .d{padding:8px}
-.item h4{font-size:14px}
-.item small{color:#666;font-size:11px}
-.price{font-weight:bold;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
-.price a{background:#22c55e;color:#fff;padding:5px 12px;border-radius:15px;text-decoration:none;font-size:12px}
-.hide{display:none}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,Arial}
+body{background:#f5f5f5;padding-bottom:80px}
+.top{background:#000;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:9}
+.top h1{font-size:22px;font-weight:900;letter-spacing:1px}
+.banner{background:#16a34a;color:#fff;margin:12px;border-radius:16px;padding:14px}
+.banner b{font-size:15px}
+.banner input{width:100%;margin-top:10px;padding:12px;border-radius:10px;border:0;font-size:15px}
+.cats{display:flex;gap:8px;padding:0 12px 10px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.cats button{padding:8px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:13px}
+.cats button.active{background:#000;color:#fff;border-color:#000}
+#products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 12px}
+.item{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.item img{width:100%;height:185px;object-fit:cover;background:#eee;display:block}
+.d{padding:9px}
+.d h4{font-size:13.5px;line-height:1.2}
+.d small{color:#666;font-size:11px}
+.price{margin-top:6px;display:flex;justify-content:space-between;align-items:center}
+.price span{font-weight:800;font-size:13px}
+.price a{background:#22c55e;color:#fff;padding:6px 12px;border-radius:20px;text-decoration:none;font-size:12px;font-weight:700}
+.hide{display:none!important}
 </style>
 </head>
 <body>
 
-<div class="top"><h1>ikokitufitii</h1><div>🛒</div></div>
+<div class="top"><h1>ikokitufitii</h1><span>🛒 Eldoret</span></div>
 
-<div class="green">
+<div class="banner">
 <b>🚚 FREE DELIVERY IN ELDORET - CBD 200, Langas 350</b><br>
-<small>Pay on Delivery • M-Pesa Till 123456</small>
-<input id="search" placeholder="Search shoes..." onkeyup="filterAll()">
+<small>Pay on Delivery • M-Pesa Till: 123456 - REPLACE WITH YOURS</small>
+<input id="searchBox" onkeyup="doSearch()" placeholder="Search shoes, e.g. loafers, boots...">
 </div>
 
-<div class="cat">
-<button class="active" onclick="showCat('all',this)">All ✓</button>
-<button onclick="showCat('sneakers',this)">Sneakers</button>
-<button onclick="showCat('boots',this)">Boots</button>
-<button onclick="showCat('formal',this)">Formal</button>
-<button onclick="showCat('running',this)">Running</button>
+<div class="cats">
+<button class="active" onclick="filterCat('all',this)">All ✓</button>
+<button onclick="filterCat('sneakers',this)">Sneakers</button>
+<button onclick="filterCat('loafers',this)">Loafers</button>
+<button onclick="filterCat('boots',this)">Boots</button>
+<button onclick="filterCat('formal',this)">Formal</button>
+<button onclick="filterCat('sandals',this)">Sandals</button>
+<button onclick="filterCat('heels',this)">Heels</button>
 </div>
 
 <div id="products">
-
-<!-- PRODUCT 1 -->
-<div class="item" data-cat="running sneakers">
-<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80" onerror="this.src='https://via.placeholder.com/400?text=SHOE'">
-<div class="d">
-<h4>Loafers - Black</h4>
-<small>Men • Sneakers</small>
-<div class="price"><span>KES 800</span><a href="https://wa.me/254700000000?text=Loafers+Black+KES800">Buy</a></div>
+<!-- 1 LOAFERS BLACK - YOUR CURRENT -->
+<div class="item" data-cat="loafers sneakers">
+<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80" loading="lazy">
+<div class="d"><h4>Loafers - Black</h4><small>Men • Loafers</small><div class="price"><span>KES 800</span><a href="https://wa.me/254700000000?text=Hi%20I%20want%20Loafers%20Black%20KES%20800">Buy</a></div></div>
+</div>
+<!-- 2 -->
+<div class="item" data-cat="sneakers">
+<img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&q=80" loading="lazy">
+<div class="d"><h4>AirForce White</h4><small>Men • Sneakers</small><div class="price"><span>KES 2,500</span><a href="https://wa.me/254700000000?text=AirForce%20White">Buy</a></div></div>
+</div>
+<!-- 3 -->
+<div class="item" data-cat="boots">
+<img src="https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=600&q=80" loading="lazy">
+<div class="d"><h4>Timberland Brown</h4><small>Men • Boots</small><div class="price"><span>KES 4,500</span><a href="https://wa.me/254700000000?text=Timberland">Buy</a></div></div>
+</div>
+<!-- 4 -->
+<div class="item" data-cat="formal loafers">
+<img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&q=80" loading="lazy">
+<div class="d"><h4>Formal Brown</h4><small>Men • Formal</small><div class="price"><span>KES 1,800</span><a href="https://wa.me/254700000000?text=Formal%20Brown">Buy</a></div></div>
+</div>
+<!-- 5 -->
+<div class="item" data-cat="sandals">
+<img src="https://images.unsplash.com/photo-1603808033176-ff1a1d3b3cc6?w=600&q=80" loading="lazy">
+<div class="d"><h4>Leather Sandals</h4><small>Unisex • Sandals</small><div class="price"><span>KES 1,200</span><a href="https://wa.me/254700000000?text=Sandals">Buy</a></div></div>
+</div>
+<!-- 6 -->
+<div class="item" data-cat="heels">
+<img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80" loading="lazy">
+<div class="d"><h4>Ladies Heels</h4><small>Women • Heels</small><div class="price"><span>KES 2,200</span><a href="https://wa.me/254700000000?text=Heels">Buy</a></div></div>
+</div>
+<!-- 7 -->
+<div class="item" data-cat="sneakers running">
+<img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80" loading="lazy">
+<div class="d"><h4>Running Black</h4><small>Men • Running</small><div class="price"><span>KES 3,000</span><a href="https://wa.me/254700000000?text=Running%20Black">Buy</a></div></div>
+</div>
+<!-- 8 -->
+<div class="item" data-cat="formal">
+<img src="https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80" loading="lazy">
+<div class="d"><h4>Official Black</h4><small>Men • Formal</small><div class="price"><span>KES 3,500</span><a href="https://wa.me/254700000000?text=Official%20Black">Buy</a></div></div>
 </div>
 </div>
 
-<!-- PRODUCT 2 -->
-<div class="item" data
+<script>
+function filterCat(cat,btn){
+document.querySelectorAll('.cats button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+document.querySelectorAll('.item').forEach(el=>{
+if(cat==='all' || el.dataset.cat.includes(cat)) el.classList.remove('hide'); else el.classList.add('hide');
+});
+}
+function doSearch(){
+let q=document.getElementById('searchBox').value.toLowerCase();
+document.querySelectorAll('.item').forEach(el=>{
+el.classList.toggle('hide', !el.innerText.toLowerCase().includes(q));
+});
+}
+</script>
+</body>
+</html>
