@@ -5,40 +5,219 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kitufiti - Everything For Every Kenyan</title>
 <style>
-body{font-family:Arial;margin:0;background:#f7f7f7}
-.header{background:#111;color:white;padding:14px 15px;display:flex;justify-content:space-between}
-.banner{background:#FF6600;color:white;padding:14px;margin:10px;border-radius:16px;line-height:1.4}
-.banner input{width:96%;padding:12px;border-radius:10px;border:none;margin-top:10px}
-.cats{display:flex;gap:8px;overflow-x:auto;padding:10px}
-.cats button{padding:9px 18px;border-radius:22px;border:1px solid #ddd;background:white;font-weight:bold;white-space:nowrap}
-.products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
-.card{background:white;border-radius:14px;padding:10px}
-.card img{width:100%;height:145px;object-fit:cover;border-radius:10px}
-.btn{background:#111;color:white;padding:9px;border:none;border-radius:10px;width:100%;margin-top:6px}
-.sellBox{background:white;margin:10px;padding:15px;border-radius:16px;border:2px dashed #FF6600}
-.sellBox input{width:95%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #ccc}
-.feeBox{background:#fff3e0;padding:10px;border-radius:10px;margin:10px 0;display:none}
-.smallBtn{background:#eee;border:none;padding:8px 12px;border-radius:8px;margin:5px;font-size:12px}
+  body { font-family: Arial; margin: 0; background: #f7f7f7; }
+  .header { background: #111; color: #fff; padding: 14px 15px; display: flex; justify-content: space-between; }
+  .banner { background: #FF6600; color: #fff; padding: 14px; margin: 10px; border-radius: 16px; }
+  .banner input { width: 96%; padding: 12px; border-radius: 10px; border: none; margin-top: 10px; }
+  .cats { display: flex; gap: 8px; overflow-x: auto; padding: 10px; }
+  .cats button { padding: 9px 18px; border-radius: 22px; border: 1px solid #ddd; background: #fff; font-weight: bold; }
+  .products { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+  .card { background: #fff; border-radius: 14px; padding: 10px; }
+  .card img { width: 100%; height: 145px; object-fit: cover; border-radius: 10px; }
+  .btn { background: #111; color: #fff; padding: 9px; border: none; border-radius: 10px; width: 100%; margin-top: 6px; }
+  .sellBox { background: #fff; margin: 10px; padding: 15px; border-radius: 16px; border: 2px solid #111; }
+  .sellBox input { width: 95%; padding: 11px; margin: 6px 0; border-radius: 8px; border: 1px solid #ccc; }
+  .feeBox { background: #fff3e0; padding: 12px; border-radius: 10px; margin: 10px 0; }
+  .payBtn { background: #00C853; color: #fff; padding: 13px; width: 100%; border: none; border-radius: 12px; font-weight: bold; margin-top: 8px; }
+  .status { font-size: 12px; padding: 8px; border-radius: 8px; margin-top: 6px; display: none; }
+  .smallBtn { background: #eee; border: none; padding: 8px 12px; border-radius: 8px; margin: 5px; font-size: 11px; }
 </style>
 </head>
 <body>
-<div class="header"><b>Kitufiti</b><span style="font-size:11px">🇰🇪 EVERYTHING</span></div>
+
+<div class="header">
+  <b>Kitufiti</b>
+  <span style="font-size:11px">KENYA WIDE DELIVERY</span>
+</div>
 
 <div class="banner">
-<b>🚚 KITUFITI - Delivery Countrywide</b><br>
-Nairobi 199 | Other Towns 299 | Mashinani 349<br>
-Till: <b style="background:yellow;color:black;padding:2px 6px;border-radius:5px">123456 - REPLACE</b><br>
-<input id="search" placeholder="Search TV, nguo, sufuria..." onkeyup="doSearch()">
+  <b>Delivery: Nairobi 199 | Other Towns 299 | Rural 349</b><br>
+  <input id="search" placeholder="Search products..." onkeyup="doSearch()">
 </div>
 
 <div class="cats">
-<button onclick="filterCat('All')">All</button>
-<button onclick="filterCat('Electronics')">⚡ Electronics</button>
-<button onclick="filterCat('Fashion')">👕 Fashion</button>
-<button onclick="filterCat('Home')">🏠 Home</button>
-<button onclick="filterCat('Beauty')">💄 Beauty</button>
-<button onclick="filterCat('Kids')">🧒 Kids</button>
+  <button onclick="filterCat('All')">All</button>
+  <button onclick="filterCat('Electronics')">Electronics</button>
+  <button onclick="filterCat('Fashion')">Fashion</button>
+  <button onclick="filterCat('Home')">Home</button>
+  <button onclick="filterCat('Beauty')">Beauty</button>
+  <button onclick="filterCat('Kids')">Kids</button>
 </div>
 
 <div class="sellBox">
-<h3 style="margin
+  <h3 style="margin:0">Sell on Kitufiti - Pay 1% via M-Pesa</h3>
+  <p style="font-size:11px;color:#666">Products are saved forever. Powered by Palpluss.</p>
+  
+  <input id="pname" placeholder="Product Name">
+  <input id="pprice" type="number" placeholder="Price KES" onkeyup="calcFee()">
+  <input id="pphone" placeholder="M-Pesa Phone 2547...">
+  <input id="pcat" value="Fashion" placeholder="Category">
+  <input type="file" id="pimage" accept="image/*">
+
+  <div id="feeBox" class="feeBox" style="display:none">
+    Fee: <b id="feeAmount">0</b> | Phone: <b id="feePhone">-</b>
+    <div id="payStatus" class="status"></div>
+  </div>
+
+  <button id="payBtn" class="payBtn" onclick="lipaWithPalpluss()">Pay 1% with M-Pesa STK Push</button>
+  <button onclick="addProductAfterPay()" style="background:#FF6600;color:#fff;padding:11px;width:100%;border:none;border-radius:10px;font-weight:bold;margin-top:8px">
+    I Have Paid - Add Product
+  </button>
+</div>
+
+<div class="products" id="list"></div>
+
+<div style="text-align:center;padding:15px">
+  <button class="smallBtn" onclick="backupProducts()">Backup Products</button>
+  <button class="smallBtn" onclick="document.getElementById('rf').click()">Restore Backup</button>
+  <input type="file" id="rf" style="display:none" onchange="restoreProducts(event)">
+</div>
+
+<script>
+const PALPLUSS_API_KEY = "YOUR_PALPLUSS_API_KEY";
+const PALPLUSS_API_URL = "https://api.palpluss.com/v1/payments/stk";
+
+let defaultProducts = [
+  {name:"32 Smart TV", category:"Electronics", price:18500, img:"https://images.unsplash.com/photo-1593359677879-a4bb92f367d8"},
+  {name:"Speaker", category:"Electronics", price:2500, img:"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1"}
+];
+
+let saved = localStorage.getItem('kitufiti_products');
+let products = saved ? JSON.parse(saved) : defaultProducts;
+let isPaid = false;
+
+function saveForever() {
+  localStorage.setItem('kitufiti_products', JSON.stringify(products));
+}
+
+let el = document.getElementById('list');
+
+function show(arr) {
+  el.innerHTML = "";
+  arr.forEach(p => {
+    el.innerHTML += `
+      <div class="card">
+        <img src="${p.img}">
+        <h4>${p.name}</h4>
+        <p>KES ${p.price}</p>
+        <p style="font-size:11px">${p.category}</p>
+        <button class="btn" onclick="buy('${p.name}','${p.seller||''}')">Buy</button>
+      </div>`;
+  });
+}
+
+function filterCat(c) {
+  if (c == 'All') show(products);
+  else show(products.filter(p => p.category == c));
+}
+
+function doSearch() {
+  let s = document.getElementById('search').value.toLowerCase();
+  show(products.filter(p => p.name.toLowerCase().includes(s)));
+}
+
+function buy(n, s) {
+  let ph = s || '254700000000';
+  window.open(`https://wa.me/${ph}?text=Hello Kitufiti, I want ${n}`, "_blank");
+}
+
+function calcFee() {
+  let pr = document.getElementById('pprice').value;
+  let ph = document.getElementById('pphone').value;
+  let fee = pr * 0.01;
+  if (pr > 0) {
+    document.getElementById('feeBox').style.display = 'block';
+    document.getElementById('feeAmount').innerText = 'KES ' + Math.round(fee);
+    document.getElementById('feePhone').innerText = ph;
+  }
+}
+
+async function lipaWithPalpluss() {
+  let phone = document.getElementById('pphone').value;
+  let price = document.getElementById('pprice').value;
+  let fee = Math.round(price * 0.01);
+  let name = document.getElementById('pname').value;
+  let status = document.getElementById('payStatus');
+
+  if (!phone || !price || !name) {
+    alert("Enter name, price, phone 254...");
+    return;
+  }
+
+  if (PALPLUSS_API_KEY == "YOUR_PALPLUSS_API_KEY") {
+    status.style.display = 'block';
+    status.style.background = '#E8F5E9';
+    status.innerHTML = 'SIMULATION: STK sent to ' + phone + ' KES ' + fee;
+    isPaid = true;
+    return;
+  }
+
+  try {
+    const r = await fetch(PALPLUSS_API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + PALPLUSS_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({phone: phone, amount: fee, accountReference: 'KITUFITI'})
+    });
+    status.style.display = 'block';
+    status.style.background = '#E8F5E9';
+    status.innerText = 'STK sent to ' + phone;
+    isPaid = true;
+  } catch (e) {
+    status.style.display = 'block';
+    status.innerText = 'Error ' + e.message;
+  }
+}
+
+function addProductAfterPay() {
+  let name = document.getElementById('pname').value;
+  let price = document.getElementById('pprice').value;
+  let phone = document.getElementById('pphone').value;
+  let cat = document.getElementById('pcat').value || 'Fashion';
+  let file = document.getElementById('pimage').files[0];
+
+  if (!name || !price) return;
+
+  function saveIt(img) {
+    products.unshift({name: name, category: cat, price: price, seller: phone, img: img});
+    saveForever();
+    show(products);
+    isPaid = false;
+  }
+
+  if (file) {
+    let reader = new FileReader();
+    reader.onload = e => saveIt(e.target.result);
+    reader.readAsDataURL(file);
+  } else {
+    saveIt("https://images.unsplash.com/photo-1523275335684-37898b6baf30");
+  }
+}
+
+function backupProducts() {
+  let b = new Blob([JSON.stringify(products)], {type: "application/json"});
+  let u = URL.createObjectURL(b);
+  let a = document.createElement('a');
+  a.href = u;
+  a.download = 'kitufiti_backup.json';
+  a.click();
+}
+
+function restoreProducts(e) {
+  let f = e.target.files[0];
+  let r = new FileReader();
+  r.onload = ev => {
+    products = JSON.parse(ev.target.result);
+    saveForever();
+    show(products);
+  };
+  r.readAsText(f);
+}
+
+show(products);
+</script>
+
+</body>
+</html>
